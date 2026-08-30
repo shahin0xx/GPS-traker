@@ -1,0 +1,28 @@
+{
+  "devices": [
+    {
+      "deviceId": "GK:7x9Pq2Rm",
+      "password": "AMin1388",
+      "buyerName": "محمد امین",
+      "buyerFamily": "صمدی",
+      "nationalCode": "1051529573",
+      "address": "نیشابور,شهرک بهداری , خیابان ولیعصر , کوچه صاحب الزمان ,پلاک 8",
+      "carType": "jac-s5",
+      "carPlate": "456ب 58",
+      "isFirstLogin": false,
+      "createdAt": "2026-08-05T12:02:38.511Z"
+    },
+    {
+      "deviceId": "GK:7x9Pq2Rn",
+      "password": "1234",
+      "buyerName": "محسن",
+      "buyerFamily": "صمدی",
+      "nationalCode": "1060410087",
+      "address": "نیشابور,شهرک بهداری , خیابان ولیعصر , کوچه صاحب الزمان ,پلاک 8",
+      "carType": "jac-s5",
+      "carPlate": "456ب 54",
+      "isFirstLogin": false,
+      "createdAt": "2026-08-05T12:05:09.571Z"
+    }
+  ]
+}

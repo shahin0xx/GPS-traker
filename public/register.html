@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ثبت‌نام | GPS Tracker</title>
+    <link rel="icon" href="/ico.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0c0e1a 0%, #1a1f3a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .register-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 50px 40px;
+            width: 100%;
+            max-width: 480px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .register-header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .register-header .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 18px;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(79, 172, 254, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .register-header .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .register-header h1 {
+            color: #fff;
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .register-header p {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 14px;
+            margin-top: 6px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        .form-group label .required {
+            color: #ff6b6b;
+            margin-right: 2px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 15px;
+            transition: all 0.3s;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: #4facfe;
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 4px rgba(79, 172, 254, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.25);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .btn-register {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #4facfe, #7c3aed);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 8px;
+            position: relative;
+        }
+
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(79, 172, 254, 0.3);
+        }
+
+        .btn-register:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-register .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto;
+        }
+
+        .btn-register.loading .spinner {
+            display: block;
+        }
+
+        .btn-register.loading .btn-text {
+            display: none;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .message {
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            display: none;
+            font-size: 14px;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .message.success {
+            display: flex;
+            background: rgba(76, 175, 80, 0.15);
+            color: #4CAF50;
+            border: 1px solid rgba(76, 175, 80, 0.2);
+        }
+
+        .message.error {
+            display: flex;
+            background: rgba(234, 67, 53, 0.15);
+            color: #ff6b6b;
+            border: 1px solid rgba(234, 67, 53, 0.2);
+        }
+
+        .links {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .links a {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 13px;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .links a:hover {
+            color: #4facfe;
+        }
+
+        .links .divider {
+            color: rgba(255, 255, 255, 0.15);
+            margin: 0 8px;
+        }
+
+        @media (max-width: 500px) {
+            .register-container {
+                padding: 30px 20px;
+            }
+
+            .register-header h1 {
+                font-size: 22px;
+            }
+
+            .register-header .logo {
+                width: 65px;
+                height: 65px;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="register-container">
+        <div class="register-header">
+            <div class="logo">
+                <img src="/ico.png" alt="GPS Tracker">
+            </div>
+            <h1>ثبت‌نام</h1>
+            <p>ایجاد حساب کاربری جدید</p>
+        </div>
+
+        <div id="registerMessage" class="message"></div>
+
+        <form id="registerForm">
+            <div class="form-group">
+                <label>نام کاربری <span class="required">*</span></label>
+                <input type="text" id="username" placeholder="نام کاربری خود را وارد کنید" required minlength="3">
+            </div>
+
+            <div class="form-group">
+                <label>نام کامل</label>
+                <input type="text" id="fullName" placeholder="نام و نام خانوادگی خود را وارد کنید">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>شماره تلفن</label>
+                    <input type="tel" id="phone" placeholder="مثال: 09123456789">
+                </div>
+                <div class="form-group">
+                    <label>ایمیل</label>
+                    <input type="email" id="email" placeholder="ایمیل خود را وارد کنید">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>رمز عبور <span class="required">*</span></label>
+                <input type="password" id="password" placeholder="رمز عبور (حداقل ۴ کاراکتر)" required minlength="4">
+            </div>
+
+            <div class="form-group">
+                <label>تکرار رمز عبور <span class="required">*</span></label>
+                <input type="password" id="confirmPassword" placeholder="رمز عبور را دوباره وارد کنید" required minlength="4">
+            </div>
+
+            <button type="submit" class="btn-register" id="registerBtn">
+                <span class="btn-text">ثبت‌نام</span>
+                <span class="spinner"></span>
+            </button>
+        </form>
+
+        <div class="links">
+            <a href="/login.html">ورود به حساب کاربری</a>
+            <span class="divider">|</span>
+            <a href="/admin-login.html">ورود ادمین</a>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    سیستم لودینگ
+    ============================================================ -->
+    <script src="/loading.js"></script>
+    <script>
+        // فعال‌سازی لودینگ
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!window.location.href.includes('loading.html')) {
+                autoLoading();
+            }
+        });
+
+        // ============================================================
+        // REGISTER LOGIC
+        // ============================================================
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value.trim();
+            const fullName = document.getElementById('fullName').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const confirm = document.getElementById('confirmPassword').value.trim();
+
+            const msg = document.getElementById('registerMessage');
+            msg.className = 'message';
+            msg.style.display = 'none';
+
+            if (password !== confirm) {
+                msg.textContent = '❌ رمز عبور و تکرار آن مطابقت ندارند';
+                msg.className = 'message error';
+                msg.style.display = 'flex';
+                return;
+            }
+
+            if (password.length < 4) {
+                msg.textContent = '❌ رمز عبور باید حداقل ۴ کاراکتر باشد';
+                msg.className = 'message error';
+                msg.style.display = 'flex';
+                return;
+            }
+
+            const btn = document.getElementById('registerBtn');
+            btn.classList.add('loading');
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/register-user', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, fullName, phone, email, password })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    msg.textContent = '✅ ' + data.message + ' - به صفحه ورود هدایت می‌شوید...';
+                    msg.className = 'message success';
+                    msg.style.display = 'flex';
+
+                    setTimeout(() => {
+                        window.location.href = '/login.html';
+                    }, 2000);
+                } else {
+                    msg.textContent = '❌ ' + (data.error || 'خطا');
+                    msg.className = 'message error';
+                    msg.style.display = 'flex';
+                    btn.classList.remove('loading');
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                msg.textContent = '❌ خطا در ارتباط با سرور';
+                msg.className = 'message error';
+                msg.style.display = 'flex';
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }
+        });
+    </script>
+
+</body>
+</html>

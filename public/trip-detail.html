@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جزئیات سفر | GPS Tracker</title>
+    <link rel="icon" href="/ico.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        :root {
+            --primary: #4facfe;
+            --secondary: #7c3aed;
+            --bg-dark: #0c0e1a;
+            --bg-card: rgba(255, 255, 255, 0.03);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.6);
+            --text-muted: rgba(255, 255, 255, 0.25);
+            --border-color: rgba(255, 255, 255, 0.06);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --transition: all 0.3s ease;
+            --font: 'Inter', sans-serif;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: var(--font);
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            direction: rtl;
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+        
+        .app-header {
+            background: rgba(12, 14, 26, 0.92);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(20px);
+            min-height: 64px;
+        }
+        .app-header .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+        .app-header .brand .logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            background: rgba(255,255,255,0.05);
+        }
+        .app-header .brand .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .app-header .brand .brand-text h1 {
+            font-size: 16px; font-weight: 700; color: white;
+        }
+        .app-header .brand .brand-text span {
+            font-size: 10px; color: var(--text-secondary);
+        }
+        .app-header .user-menu {
+            display: flex; align-items: center; gap: 12px;
+        }
+        .app-header .user-menu .user-badge {
+            display: flex; align-items: center; gap: 10px;
+            background: rgba(255,255,255,0.04);
+            padding: 6px 14px 6px 6px;
+            border-radius: 30px;
+            border: 1px solid var(--border-color);
+        }
+        .app-header .user-menu .user-badge .avatar {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: 700; color: white;
+        }
+        .app-header .user-menu .user-badge .user-info-text .name {
+            font-size: 13px; font-weight: 600; color: white;
+        }
+        .app-header .user-menu .user-badge .user-info-text .device-id-small {
+            font-size: 9px; color: var(--text-secondary); direction: ltr;
+        }
+        .app-header .user-menu .btn-icon {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            width: 38px; height: 38px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 15px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+        .app-header .user-menu .btn-icon:hover {
+            background: rgba(255,255,255,0.08);
+            color: white;
+        }
+        .app-header .user-menu .btn-icon.danger:hover {
+            background: rgba(234,67,53,0.2);
+            color: #ff6b6b;
+        }
+        .app-header .user-menu .btn-icon.active {
+            background: rgba(79,172,254,0.15);
+            color: var(--primary);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px 20px;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .page-header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .page-header h1 i {
+            color: var(--primary);
+        }
+        .page-header .actions {
+            display: flex;
+            gap: 10px;
+        }
+        .page-header .actions .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font);
+            text-decoration: none;
+        }
+        .page-header .actions .btn-outline {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+        .page-header .actions .btn-outline:hover {
+            background: rgba(255,255,255,0.05);
+            color: white;
+        }
+        .page-header .actions .btn-danger {
+            background: rgba(234,67,53,0.15);
+            color: #ff6b6b;
+            border: 1px solid rgba(234,67,53,0.2);
+        }
+        .page-header .actions .btn-danger:hover {
+            background: rgba(234,67,53,0.25);
+        }
+        
+        .map-container {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            margin-bottom: 20px;
+            height: 380px;
+        }
+        .map-container #map {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+        .detail-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 14px 18px;
+            border: 1px solid var(--border-color);
+        }
+        .detail-card .label {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+        .detail-card .value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #4FC3F7;
+            margin-top: 4px;
+        }
+        .detail-card .value.active {
+            color: #ff6b6b;
+        }
+        .detail-card .value.completed {
+            color: #4CAF50;
+        }
+        
+        .stops-section {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 20px;
+            border: 1px solid var(--border-color);
+        }
+        .stops-section h3 {
+            font-size: 16px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .stops-section h3 i {
+            color: #FFC107;
+        }
+        .stop-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 13px;
+        }
+        .stop-item:last-child {
+            border-bottom: none;
+        }
+        .stop-item .stop-location {
+            color: var(--text-secondary);
+        }
+        .stop-item .stop-duration {
+            color: #4FC3F7;
+            font-weight: 600;
+        }
+        
+        .loading-spinner {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+        }
+        .loading-spinner i {
+            font-size: 32px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .error-box {
+            text-align: center;
+            padding: 40px;
+            color: #ff6b6b;
+        }
+        .error-box i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            display: block;
+        }
+        .error-box h2 {
+            margin-bottom: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .container { padding: 16px 12px; }
+            .page-header h1 { font-size: 20px; }
+            .map-container { height: 260px; }
+            .detail-grid { grid-template-columns: 1fr 1fr; }
+            .app-header { padding: 10px 14px; }
+            .app-header .brand .brand-text h1 { font-size: 14px; }
+            .app-header .brand .brand-text span { display: none; }
+            .app-header .user-menu .user-badge { padding: 4px 10px 4px 4px; }
+            .app-header .user-menu .user-badge .user-info-text .device-id-small { display: none; }
+            .app-header .user-menu .btn-icon { width: 34px; height: 34px; font-size: 13px; }
+        }
+        @media (max-width: 480px) {
+            .detail-grid { grid-template-columns: 1fr; }
+            .map-container { height: 180px; }
+            .page-header .actions .btn { padding: 8px 14px; font-size: 12px; }
+            .app-header .brand .logo { width: 32px; height: 32px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="app-header">
+        <a href="/index.html" class="brand">
+            <div class="logo">
+                <img src="/ico.png" alt="GPS Tracker">
+            </div>
+            <div class="brand-text">
+                <h1>GPS Tracker</h1>
+                <span>سیستم ردیابی لحظه‌ای</span>
+            </div>
+        </a>
+        <div class="user-menu">
+            <div class="user-badge">
+                <div class="avatar" id="userAvatar">U</div>
+                <div class="user-info-text">
+                    <span class="name" id="userNameDisplay">کاربر</span>
+                    <span class="device-id-small" id="deviceIdSmall">🆔 ---</span>
+                </div>
+            </div>
+            <a href="/index.html" class="btn-icon" title="نقشه"><i class="fas fa-map"></i></a>
+            <a href="/trips.html" class="btn-icon active" title="سفرها"><i class="fas fa-route"></i></a>
+            <a href="/shared-links.html" class="btn-icon" title="لینک‌های اشتراک"><i class="fas fa-link"></i></a>
+            <button class="btn-icon danger" onclick="logoutUser()" title="خروج"><i class="fas fa-sign-out-alt"></i></button>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <div class="container">
+        <div class="page-header">
+            <div>
+                <h1><i class="fas fa-map"></i> جزئیات سفر</h1>
+            </div>
+            <div class="actions">
+                <a href="/trips.html" class="btn btn-outline">
+                    <i class="fas fa-arrow-right"></i> بازگشت به لیست
+                </a>
+                <button class="btn btn-danger" onclick="deleteTrip()">
+                    <i class="fas fa-trash"></i> حذف سفر
+                </button>
+            </div>
+        </div>
+
+        <div id="tripContent">
+            <div class="loading-spinner">
+                <i class="fas fa-circle-notch fa-spin"></i>
+                <p style="margin-top:12px;">در حال بارگذاری...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    سیستم لودینگ
+    ============================================================ -->
+    <script src="/loading.js"></script>
+    <script>
+        // فعال‌سازی لودینگ
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!window.location.href.includes('loading.html')) {
+                autoLoading();
+            }
+        });
+
+        // ============================================================
+        // CHECK SESSION
+        // ============================================================
+        let deviceId = null;
+        let tripId = null;
+
+        async function checkUserSession() {
+            try {
+                const response = await fetch('/api/user-check');
+                const result = await response.json();
+
+                if (!result.isLoggedIn) {
+                    window.location.href = '/login.html';
+                    return;
+                }
+
+                deviceId = result.deviceId;
+                document.getElementById('userNameDisplay').textContent = result.userName || 'کاربر';
+                document.getElementById('deviceIdSmall').textContent = '🆔 ' + deviceId;
+                document.getElementById('userAvatar').textContent = (result.userName || 'U').charAt(0).toUpperCase();
+
+                const params = new URLSearchParams(window.location.search);
+                tripId = params.get('id');
+
+                if (!tripId) {
+                    showError('شناسه سفر مشخص نیست');
+                    return;
+                }
+
+                loadTripDetail();
+            } catch (e) {
+                window.location.href = '/login.html';
+            }
+        }
+
+        async function logoutUser() {
+            if (!confirm('آیا از خروج از سیستم مطمئن هستید؟')) return;
+            try {
+                await fetch('/api/user-logout', { method: 'POST' });
+                localStorage.clear();
+                window.location.href = '/login.html';
+            } catch (e) {
+                window.location.href = '/login.html';
+            }
+        }
+
+        // ============================================================
+        // LOAD TRIP DETAIL
+        // ============================================================
+        async function loadTripDetail() {
+            try {
+                const response = await fetch('/api/trip/' + tripId);
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    showError(error.error || 'خطا در دریافت اطلاعات');
+                    return;
+                }
+
+                const trip = await response.json();
+                renderTripDetail(trip);
+
+            } catch (error) {
+                showError(error.message);
+            }
+        }
+
+        function renderTripDetail(trip) {
+            const container = document.getElementById('tripContent');
+
+            const startDate = new Date(trip.startTime);
+            const endDate = trip.endTime ? new Date(trip.endTime) : null;
+
+            const startDateStr = startDate.toLocaleDateString('fa-IR') + ' ' + startDate.toLocaleTimeString('fa-IR');
+            const endDateStr = endDate ? endDate.toLocaleDateString('fa-IR') + ' ' + endDate.toLocaleTimeString('fa-IR') : 'در حال ضبط';
+
+            let duration = 'نامشخص';
+            if (trip.endTime) {
+                const diff = (endDate - startDate) / 1000 / 60;
+                if (diff < 60) {
+                    duration = Math.round(diff) + ' دقیقه';
+                } else {
+                    const hours = Math.floor(diff / 60);
+                    const mins = Math.round(diff % 60);
+                    duration = hours + ' ساعت ' + mins + ' دقیقه';
+                }
+            }
+
+            container.innerHTML = `
+                <div class="map-container">
+                    <div id="map"></div>
+                </div>
+
+                <div class="detail-grid">
+                    <div class="detail-card">
+                        <div class="label">تاریخ شروع</div>
+                        <div class="value" style="font-size:15px;">${startDateStr}</div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="label">تاریخ پایان</div>
+                        <div class="value" style="font-size:15px;">${endDateStr}</div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="label">مدت زمان</div>
+                        <div class="value">${duration}</div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="label">وضعیت</div>
+                        <div class="value ${trip.isActive ? 'active' : 'completed'}">
+                            ${trip.isActive ? '⏳ در حال ضبط' : '✅ تکمیل شده'}
+                        </div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="label">مسافت کل</div>
+                        <div class="value">${(trip.totalDistance || 0).toFixed(2)} km</div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="label">حداکثر سرعت</div>
+                        <div class="value">${Math.round(trip.maxSpeed || 0)} km/h</div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="label">میانگین سرعت</div>
+                        <div class="value">${Math.round(trip.avgSpeed || 0)} km/h</div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="label">نقاط ثبت شده</div>
+                        <div class="value">${trip.locations ? trip.locations.length : 0}</div>
+                    </div>
+                </div>
+
+                <div class="stops-section">
+                    <h3><i class="fas fa-stop-circle"></i> توقف‌ها (${trip.stops ? trip.stops.length : 0})</h3>
+                    ${trip.stops && trip.stops.length > 0 ? trip.stops.map(stop => `
+                        <div class="stop-item">
+                            <span class="stop-location">
+                                <i class="fas fa-map-pin"></i>
+                                ${stop.lat.toFixed(6)}, ${stop.lng.toFixed(6)}
+                            </span>
+                            <span class="stop-duration">
+                                ${Math.round(stop.duration)} ثانیه
+                            </span>
+                        </div>
+                    `).join('') : '<div style="color:var(--text-secondary);font-size:13px;">هیچ توقفی ثبت نشده</div>'}
+                </div>
+            `;
+
+            if (trip.locations && trip.locations.length > 0) {
+                setTimeout(() => initMap(trip.locations), 200);
+            }
+        }
+
+        function initMap(locations) {
+            const map = L.map('map', { zoomControl: true });
+            L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+                subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+                maxZoom: 20
+            }).addTo(map);
+
+            const points = locations.map(l => [l.lat, l.lng]);
+            const center = points.length > 0 ? points[0] : [35.6892, 51.3890];
+            map.setView(center, 15);
+
+            if (points.length > 1) {
+                L.polyline(points, { color: '#4FC3F7', weight: 4, opacity: 0.9 }).addTo(map);
+                L.marker(points[0], {
+                    icon: L.divIcon({ className: 'start-marker', html: '🏁', iconSize: [30, 30] })
+                }).addTo(map).bindPopup('📍 شروع');
+                L.marker(points[points.length - 1], {
+                    icon: L.divIcon({ className: 'end-marker', html: '🎯', iconSize: [30, 30] })
+                }).addTo(map).bindPopup('📍 پایان');
+            }
+
+            if (points.length === 1) {
+                L.marker(points[0]).addTo(map);
+            }
+
+            if (points.length > 1) {
+                map.fitBounds(points, { padding: [50, 50] });
+            }
+        }
+
+        function showError(message) {
+            document.getElementById('tripContent').innerHTML = `
+                <div class="error-box">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h2>خطا</h2>
+                    <p>${message}</p>
+                    <a href="/trips.html" class="btn btn-outline" style="margin-top:16px;display:inline-block;padding:10px 24px;border:1px solid var(--border-color);border-radius:10px;color:var(--text-secondary);text-decoration:none;">
+                        بازگشت به لیست سفرها
+                    </a>
+                </div>
+            `;
+        }
+
+        async function deleteTrip() {
+            if (!confirm('آیا از حذف این سفر مطمئن هستید؟ این عمل غیرقابل بازگشت است.')) return;
+
+            try {
+                const response = await fetch('/api/trip/' + tripId, { method: 'DELETE' });
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert('✅ سفر با موفقیت حذف شد');
+                    window.location.href = '/trips.html';
+                } else {
+                    alert('❌ ' + (result.error || 'خطا در حذف سفر'));
+                }
+            } catch (error) {
+                alert('❌ خطا در ارتباط با سرور');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', checkUserSession);
+    </script>
+
+</body>
+</html>

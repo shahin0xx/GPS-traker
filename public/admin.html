@@ -1,0 +1,2320 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پنل مدیریت - GPS Tracker</title>
+    <link rel="icon" href="/ico.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ============ RESET & BASE ============ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0c0e1a;
+            color: #e0e0e0;
+            direction: rtl;
+            min-height: 100vh;
+        }
+
+        /* ============ SIDEBAR ============ */
+        .sidebar {
+            position: fixed;
+            right: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: linear-gradient(180deg, #0c0e1a 0%, #1a1f3a 50%, #0c0e1a 100%);
+            color: white;
+            padding: 20px 0;
+            z-index: 1000;
+            transition: all 0.3s;
+            overflow-y: auto;
+            border-left: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .sidebar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 4px;
+        }
+
+        .sidebar-brand {
+            padding: 20px 25px 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: center;
+        }
+
+        .sidebar-brand .logo {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 12px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar-brand .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .sidebar-brand h2 {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .sidebar-brand small {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.3);
+            display: block;
+            margin-top: 2px;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+        .sidebar-menu .menu-label {
+            padding: 0 25px 10px;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.2);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .sidebar-menu .menu-item {
+            padding: 12px 25px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: rgba(255, 255, 255, 0.5);
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-right: 3px solid transparent;
+            font-size: 14px;
+        }
+        .sidebar-menu .menu-item:hover {
+            background: rgba(255, 255, 255, 0.04);
+            color: white;
+            border-right-color: #667eea;
+        }
+        .sidebar-menu .menu-item.active {
+            background: rgba(102, 126, 234, 0.12);
+            color: white;
+            border-right-color: #667eea;
+        }
+        .sidebar-menu .menu-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 16px;
+        }
+        .sidebar-menu .menu-item .badge {
+            margin-right: auto;
+            background: rgba(102, 126, 234, 0.3);
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            color: #667eea;
+        }
+        .sidebar-menu .menu-item .badge.danger {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+        }
+        .sidebar-menu .menu-item .badge.success {
+            background: rgba(52, 168, 83, 0.2);
+            color: #34a853;
+        }
+
+        .sidebar-footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            padding: 20px 25px;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .sidebar-footer .admin-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .sidebar-footer .admin-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+        }
+        .sidebar-footer .admin-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+        }
+        .sidebar-footer .admin-role {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* ============ MAIN CONTENT ============ */
+        .main-content {
+            margin-right: 260px;
+            padding: 20px 30px 30px;
+            min-height: 100vh;
+        }
+
+        /* ============ TOP BAR ============ */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .topbar .page-title h1 {
+            font-size: 24px;
+            color: #fff;
+        }
+        .topbar .page-title p {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.3);
+            margin-top: 4px;
+        }
+        .topbar-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .topbar-actions .search-box {
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 10px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .topbar-actions .search-box input {
+            border: none;
+            outline: none;
+            font-size: 13px;
+            width: 180px;
+            background: transparent;
+            color: #fff;
+        }
+        .topbar-actions .search-box input::placeholder {
+            color: rgba(255, 255, 255, 0.25);
+        }
+        .topbar-actions .search-box i {
+            color: rgba(255, 255, 255, 0.3);
+        }
+        .topbar-actions .btn-logout {
+            background: rgba(231, 76, 60, 0.15);
+            color: #e74c3c;
+            border: 1px solid rgba(231, 76, 60, 0.2);
+            padding: 8px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .topbar-actions .btn-logout:hover {
+            background: rgba(231, 76, 60, 0.25);
+        }
+
+        /* ============ STATS CARDS ============ */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            padding: 20px 24px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .stat-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-3px);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        .stat-card .stat-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        .stat-card .stat-icon.blue {
+            background: rgba(26, 115, 232, 0.15);
+            color: #4facfe;
+        }
+        .stat-card .stat-icon.green {
+            background: rgba(52, 168, 83, 0.15);
+            color: #34a853;
+        }
+        .stat-card .stat-icon.orange {
+            background: rgba(249, 171, 0, 0.15);
+            color: #f9ab00;
+        }
+        .stat-card .stat-icon.purple {
+            background: rgba(124, 58, 237, 0.15);
+            color: #7c3aed;
+        }
+        .stat-card .stat-icon.red {
+            background: rgba(231, 76, 60, 0.15);
+            color: #e74c3c;
+        }
+        .stat-card .stat-icon.teal {
+            background: rgba(0, 172, 193, 0.15);
+            color: #00acc1;
+        }
+        .stat-card .stat-number {
+            font-size: 26px;
+            font-weight: 700;
+            color: #fff;
+        }
+        .stat-card .stat-label {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.3);
+            margin-top: 2px;
+        }
+
+        /* ============ CONTENT SECTIONS ============ */
+        .content-section {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+        .content-section.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            padding: 25px 30px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 25px;
+        }
+        .section-card .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .section-card .card-header h2 {
+            font-size: 18px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-card .card-header h2 i {
+            color: #667eea;
+        }
+        .section-card .card-header .card-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* ============ FORMS ============ */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+        }
+        .form-group {
+            margin-bottom: 4px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+        .form-group label .required {
+            color: #e74c3c;
+            margin-right: 4px;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.04);
+            color: #fff;
+            font-family: inherit;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #667eea;
+            outline: none;
+            background: rgba(255, 255, 255, 0.06);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.08);
+        }
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.2);
+        }
+        .form-group select option {
+            background: #1a1f3a;
+            color: #fff;
+        }
+        .form-group .hint {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.2);
+            margin-top: 4px;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn:hover {
+            transform: scale(1.02);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        .btn-primary:hover {
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+        }
+        .btn-success {
+            background: #34a853;
+            color: white;
+        }
+        .btn-success:hover {
+            box-shadow: 0 4px 20px rgba(52, 168, 83, 0.3);
+        }
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+        .btn-danger:hover {
+            box-shadow: 0 4px 20px rgba(231, 76, 60, 0.3);
+        }
+        .btn-warning {
+            background: #f9ab00;
+            color: white;
+        }
+        .btn-warning:hover {
+            box-shadow: 0 4px 20px rgba(249, 171, 0, 0.3);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.5);
+        }
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+        .btn-sm {
+            padding: 6px 14px;
+            font-size: 12px;
+        }
+        .btn-xs {
+            padding: 4px 10px;
+            font-size: 11px;
+        }
+
+        /* ============ TABLES ============ */
+        .table-responsive {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        table th {
+            text-align: right;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            color: rgba(255, 255, 255, 0.4);
+            font-weight: 600;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.05);
+            white-space: nowrap;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            vertical-align: middle;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        table tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        .status-badge {
+            padding: 3px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .status-badge.active {
+            background: rgba(52, 168, 83, 0.15);
+            color: #34a853;
+        }
+        .status-badge.pending {
+            background: rgba(249, 171, 0, 0.15);
+            color: #f9ab00;
+        }
+        .status-badge.inactive {
+            background: rgba(231, 76, 60, 0.15);
+            color: #e74c3c;
+        }
+        .status-badge.admin {
+            background: rgba(79, 172, 254, 0.15);
+            color: #4facfe;
+        }
+        .status-badge.super {
+            background: rgba(124, 58, 237, 0.15);
+            color: #7c3aed;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .table-actions .btn-icon {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.04);
+            color: rgba(255, 255, 255, 0.3);
+        }
+        .table-actions .btn-icon:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+        }
+        .table-actions .btn-icon.edit {
+            color: #f9ab00;
+        }
+        .table-actions .btn-icon.edit:hover {
+            background: rgba(249, 171, 0, 0.15);
+        }
+        .table-actions .btn-icon.delete {
+            color: #e74c3c;
+        }
+        .table-actions .btn-icon.delete:hover {
+            background: rgba(231, 76, 60, 0.15);
+        }
+        .table-actions .btn-icon.view {
+            color: #4facfe;
+        }
+        .table-actions .btn-icon.view:hover {
+            background: rgba(79, 172, 254, 0.15);
+        }
+        .table-actions .btn-icon.assign {
+            color: #34a853;
+        }
+        .table-actions .btn-icon.assign:hover {
+            background: rgba(52, 168, 83, 0.15);
+        }
+        .table-actions .btn-icon.toggle {
+            color: #7c3aed;
+        }
+        .table-actions .btn-icon.toggle:hover {
+            background: rgba(124, 58, 237, 0.15);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: rgba(255, 255, 255, 0.15);
+        }
+        .empty-state i {
+            font-size: 44px;
+            margin-bottom: 12px;
+            display: block;
+        }
+        .empty-state h3 {
+            color: rgba(255, 255, 255, 0.2);
+            font-weight: 400;
+        }
+
+        /* ============ MESSAGES ============ */
+        .message {
+            padding: 12px 18px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            display: none;
+            font-size: 14px;
+            align-items: center;
+            gap: 10px;
+        }
+        .message.success {
+            display: flex;
+            background: rgba(52, 168, 83, 0.12);
+            color: #34a853;
+            border: 1px solid rgba(52, 168, 83, 0.15);
+        }
+        .message.error {
+            display: flex;
+            background: rgba(231, 76, 60, 0.12);
+            color: #e74c3c;
+            border: 1px solid rgba(231, 76, 60, 0.15);
+        }
+        .message.info {
+            display: flex;
+            background: rgba(79, 172, 254, 0.12);
+            color: #4facfe;
+            border: 1px solid rgba(79, 172, 254, 0.15);
+        }
+
+        /* ============ MODAL ============ */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-box {
+            background: #1a1f3a;
+            border-radius: 20px;
+            padding: 35px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            animation: fadeIn 0.3s ease;
+        }
+        .modal-box h3 {
+            font-size: 20px;
+            color: #fff;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .modal-box .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .modal-box .modal-actions .btn {
+            flex: 1;
+            justify-content: center;
+            min-width: 80px;
+        }
+
+        /* ============ RESPONSIVE ============ */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 220px;
+            }
+            .main-content {
+                margin-right: 220px;
+                padding: 15px;
+            }
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 10px 0;
+                border-left: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            }
+            .sidebar-brand {
+                padding: 10px 20px;
+            }
+            .sidebar-brand .logo {
+                width: 40px;
+                height: 40px;
+            }
+            .sidebar-menu {
+                display: flex;
+                flex-wrap: wrap;
+                padding: 10px 15px;
+                gap: 4px;
+            }
+            .sidebar-menu .menu-label {
+                display: none;
+            }
+            .sidebar-menu .menu-item {
+                padding: 8px 14px;
+                font-size: 13px;
+                border-right: none;
+                border-bottom: 3px solid transparent;
+            }
+            .sidebar-menu .menu-item.active {
+                border-bottom-color: #667eea;
+                border-right-color: transparent;
+            }
+            .sidebar-footer {
+                display: none;
+            }
+            .main-content {
+                margin-right: 0;
+                padding: 15px;
+            }
+            .topbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .topbar-actions {
+                flex-wrap: wrap;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .section-card {
+                padding: 18px;
+            }
+            .modal-box {
+                padding: 20px;
+            }
+            .modal-box .modal-actions .btn {
+                flex: none;
+                width: 100%;
+            }
+        }
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<script src="/loading.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (!window.location.href.includes('loading.html')) {
+            autoLoading();
+        }
+    });
+</script>
+<body>
+
+    <!-- ============ SIDEBAR ============ -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="logo">
+                <img src="/ico.png" alt="GPS Tracker">
+            </div>
+            <h2>GPS Tracker</h2>
+            <small>پنل مدیریت</small>
+        </div>
+
+        <nav class="sidebar-menu">
+            <div class="menu-label">داشبورد</div>
+            <a class="menu-item active" data-section="dashboard">
+                <i class="fas fa-chart-pie"></i> نمای کلی
+            </a>
+
+            <div class="menu-label" style="margin-top:15px;">مدیریت</div>
+            <a class="menu-item" data-section="users">
+                <i class="fas fa-users"></i> کاربران
+                <span class="badge" id="userBadge">0</span>
+            </a>
+            <a class="menu-item" data-section="devices">
+                <i class="fas fa-satellite"></i> دستگاه‌ها
+                <span class="badge" id="deviceBadge">0</span>
+            </a>
+            <a class="menu-item" data-section="admins" id="adminMenu">
+                <i class="fas fa-user-shield"></i> ادمین‌ها
+                <span class="badge" id="adminBadge">0</span>
+            </a>
+
+            <div class="menu-label" style="margin-top:15px;">فروشگاه</div>
+            <a class="menu-item" data-section="shop">
+                <i class="fas fa-store"></i> مدیریت فروشگاه
+                <span class="badge success">جدید</span>
+            </a>
+
+            <div class="menu-label" style="margin-top:15px;">تنظیمات</div>
+            <a class="menu-item" data-section="settings">
+                <i class="fas fa-cog"></i> تنظیمات
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="admin-info">
+                <div class="admin-avatar" id="adminAvatar">A</div>
+                <div>
+                    <div class="admin-name" id="adminName">ادمین</div>
+                    <div class="admin-role" id="adminRole">مدیر سیستم</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ============ MAIN CONTENT ============ -->
+    <main class="main-content">
+
+        <!-- ===== TOPBAR ===== -->
+        <header class="topbar">
+            <div class="page-title">
+                <h1 id="pageTitle">📊 نمای کلی</h1>
+                <p id="pageSubtitle">خلاصه وضعیت سیستم</p>
+            </div>
+            <div class="topbar-actions">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="جستجو..." id="globalSearch" oninput="globalSearch(this.value)">
+                </div>
+                <button class="btn btn-outline btn-sm" onclick="openPasswordModal()">
+                    <i class="fas fa-key"></i> تغییر رمز
+                </button>
+                <button class="btn-logout" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> خروج
+                </button>
+            </div>
+        </header>
+
+        <!-- ===== SECTION: DASHBOARD ===== -->
+        <section class="content-section active" id="section-dashboard">
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card" onclick="switchSection('users')">
+                    <div class="stat-icon blue"><i class="fas fa-users"></i></div>
+                    <div class="stat-number" id="statUsers">0</div>
+                    <div class="stat-label">کاربران</div>
+                </div>
+                <div class="stat-card" onclick="switchSection('devices')">
+                    <div class="stat-icon green"><i class="fas fa-satellite"></i></div>
+                    <div class="stat-number" id="statDevices">0</div>
+                    <div class="stat-label">دستگاه‌ها</div>
+                </div>
+                <div class="stat-card" onclick="switchSection('devices')">
+                    <div class="stat-icon orange"><i class="fas fa-check-circle"></i></div>
+                    <div class="stat-number" id="statOnline">0</div>
+                    <div class="stat-label">دستگاه‌های آنلاین</div>
+                </div>
+                <div class="stat-card" onclick="switchSection('admins')">
+                    <div class="stat-icon purple"><i class="fas fa-user-shield"></i></div>
+                    <div class="stat-number" id="statAdmins">0</div>
+                    <div class="stat-label">ادمین‌ها</div>
+                </div>
+                <div class="stat-card" onclick="switchSection('devices')">
+                    <div class="stat-icon red"><i class="fas fa-clock"></i></div>
+                    <div class="stat-number" id="statPending">0</div>
+                    <div class="stat-label">دستگاه‌های در انتظار</div>
+                </div>
+                <div class="stat-card" onclick="switchSection('users')">
+                    <div class="stat-icon teal"><i class="fas fa-user-plus"></i></div>
+                    <div class="stat-number" id="statNewUsers">0</div>
+                    <div class="stat-label">کاربران جدید (امروز)</div>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-clock"></i> آخرین فعالیت‌ها</h2>
+                </div>
+                <div id="recentActivities">
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <h3>هیچ فعالیتی ثبت نشده</h3>
+                        <p style="font-size:13px;">به محض دریافت داده، اینجا نمایش داده می‌شود</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== SECTION: USERS ===== -->
+        <section class="content-section" id="section-users">
+            <div class="section-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-users"></i> مدیریت کاربران</h2>
+                    <div class="card-actions">
+                        <button class="btn btn-success btn-sm" onclick="openCreateUserModal()">
+                            <i class="fas fa-plus"></i> کاربر جدید
+                        </button>
+                        <button class="btn btn-outline btn-sm" onclick="loadUsers()">
+                            <i class="fas fa-sync-alt"></i> بروزرسانی
+                        </button>
+                    </div>
+                </div>
+                <div id="userMessage" class="message"></div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>نام کاربری</th>
+                                <th>نام کامل</th>
+                                <th>تلفن</th>
+                                <th>دستگاه‌ها</th>
+                                <th>وضعیت</th>
+                                <th>تاریخ ثبت</th>
+                                <th>عملیات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <tr>
+                                <td colspan="8" class="empty-state">
+                                    <i class="fas fa-users" style="font-size:32px;"></i>
+                                    <h3>هیچ کاربری ثبت نشده</h3>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== SECTION: DEVICES ===== -->
+        <section class="content-section" id="section-devices">
+            <div class="section-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-satellite"></i> مدیریت دستگاه‌ها</h2>
+                    <div class="card-actions">
+                        <button class="btn btn-primary btn-sm" onclick="openDeviceModal()">
+                            <i class="fas fa-plus"></i> دستگاه جدید
+                        </button>
+                        <button class="btn btn-outline btn-sm" onclick="loadDevices()">
+                            <i class="fas fa-sync-alt"></i> بروزرسانی
+                        </button>
+                    </div>
+                </div>
+                <div id="deviceMessage" class="message"></div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>شناسه دستگاه</th>
+                                <th>کاربر</th>
+                                <th>خریدار</th>
+                                <th>شماره دارنده</th>
+                                <th>ماشین</th>
+                                <th>وضعیت</th>
+                                <th>موقعیت</th>
+                                <th>عملیات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="devicesTableBody">
+                            <tr>
+                                <td colspan="8" class="empty-state">
+                                    <i class="fas fa-satellite" style="font-size:32px;"></i>
+                                    <h3>هیچ دستگاهی ثبت نشده</h3>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== SECTION: ADMINS ===== -->
+        <section class="content-section" id="section-admins">
+            <div class="section-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-user-shield"></i> مدیریت ادمین‌ها</h2>
+                    <div class="card-actions">
+                        <button class="btn btn-primary btn-sm" onclick="openAdminCreateModal()">
+                            <i class="fas fa-plus"></i> ادمین جدید
+                        </button>
+                        <button class="btn btn-outline btn-sm" onclick="loadAdmins()">
+                            <i class="fas fa-sync-alt"></i> بروزرسانی
+                        </button>
+                    </div>
+                </div>
+                <div id="adminMessage" class="message"></div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>نام کاربری</th>
+                                <th>نام کامل</th>
+                                <th>نوع</th>
+                                <th>تاریخ ثبت</th>
+                                <th>عملیات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminsTableBody">
+                            <tr>
+                                <td colspan="5" class="empty-state">
+                                    <i class="fas fa-user-shield" style="font-size:32px;"></i>
+                                    <h3>هیچ ادمینی ثبت نشده</h3>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== SECTION: SHOP ===== -->
+        <section class="content-section" id="section-shop">
+            <div class="section-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-store"></i> مدیریت فروشگاه</h2>
+                    <div class="card-actions">
+                        <a href="/admin-shop.html" class="btn btn-primary btn-sm">
+                            <i class="fas fa-arrow-left"></i> ورود به مدیریت فروشگاه
+                        </a>
+                        <button class="btn btn-outline btn-sm" onclick="loadShopStats()">
+                            <i class="fas fa-sync-alt"></i> بروزرسانی
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- آمار فروشگاه -->
+                <div class="stats-grid" style="margin-bottom:20px;" id="shopStatsGrid">
+                    <div class="stat-card">
+                        <div class="stat-icon blue"><i class="fas fa-box"></i></div>
+                        <div class="stat-number" id="shopProductsCount">0</div>
+                        <div class="stat-label">تعداد محصولات</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon green"><i class="fas fa-tags"></i></div>
+                        <div class="stat-number" id="shopCategoriesCount">0</div>
+                        <div class="stat-label">دسته‌بندی‌ها</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon orange"><i class="fas fa-images"></i></div>
+                        <div class="stat-number" id="shopSlidesCount">0</div>
+                        <div class="stat-label">اسلایدها</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon purple"><i class="fas fa-eye"></i></div>
+                        <div class="stat-number" id="shopTotalViews">0</div>
+                        <div class="stat-label">بازدید کل</div>
+                    </div>
+                </div>
+
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;">
+                    <a href="/admin-shop.html?tab=products" class="btn btn-primary" style="justify-content:center;">
+                        <i class="fas fa-box"></i> مدیریت محصولات
+                    </a>
+                    <a href="/admin-shop.html?tab=categories" class="btn btn-success" style="justify-content:center;">
+                        <i class="fas fa-tags"></i> مدیریت دسته‌بندی‌ها
+                    </a>
+                    <a href="/admin-shop.html?tab=slides" class="btn btn-warning" style="justify-content:center;">
+                        <i class="fas fa-images"></i> مدیریت اسلایدها
+                    </a>
+                    <a href="/admin-shop.html?tab=shop" class="btn btn-outline" style="justify-content:center;">
+                        <i class="fas fa-cog"></i> تنظیمات فروشگاه
+                    </a>
+                </div>
+
+                <div style="margin-top:16px;padding:16px;background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid rgba(255,255,255,0.05);">
+                    <p style="color:rgba(255,255,255,0.4);font-size:13px;">
+                        <i class="fas fa-info-circle" style="color:#4facfe;"></i>
+                        از این بخش می‌توانید محصولات، دسته‌بندی‌ها، اسلایدها و تنظیمات فروشگاه را مدیریت کنید.
+                    </p>
+                    <p style="color:rgba(255,255,255,0.2);font-size:12px;margin-top:4px;">
+                        <i class="fas fa-link"></i> لینک فروشگاه: <a href="/shop.html" target="_blank" style="color:#4facfe;">/shop.html</a>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== SECTION: SETTINGS ===== -->
+        <section class="content-section" id="section-settings">
+            <div class="section-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-cog"></i> تنظیمات سیستم</h2>
+                </div>
+                <div class="form-grid" style="max-width:600px;">
+                    <div class="form-group">
+                        <label>نام کاربری ادمین</label>
+                        <input type="text" id="settingsUsername" readonly style="background:rgba(255,255,255,0.03);">
+                    </div>
+                    <div class="form-group">
+                        <label>نوع کاربری</label>
+                        <input type="text" id="settingsRole" readonly style="background:rgba(255,255,255,0.03);">
+                    </div>
+                    <div class="form-group">
+                        <label>تعداد کاربران</label>
+                        <input type="text" id="settingsUsersCount" readonly style="background:rgba(255,255,255,0.03);">
+                    </div>
+                    <div class="form-group">
+                        <label>تعداد دستگاه‌ها</label>
+                        <input type="text" id="settingsDevicesCount" readonly style="background:rgba(255,255,255,0.03);">
+                    </div>
+                    <div class="form-group">
+                        <label>تعداد ادمین‌ها</label>
+                        <input type="text" id="settingsAdminsCount" readonly style="background:rgba(255,255,255,0.03);">
+                    </div>
+                    <div class="form-group">
+                        <label>تعداد محصولات</label>
+                        <input type="text" id="settingsShopProducts" readonly style="background:rgba(255,255,255,0.03);">
+                    </div>
+                </div>
+                <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap;">
+                    <button class="btn btn-warning" onclick="openPasswordModal()">
+                        <i class="fas fa-key"></i> تغییر رمز عبور
+                    </button>
+                    <button class="btn btn-danger" onclick="if(confirm('آیا از خروج از سیستم مطمئن هستید؟')) logout()">
+                        <i class="fas fa-sign-out-alt"></i> خروج از سیستم
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ============ MODAL: Create User ============ -->
+    <div class="modal-overlay" id="createUserModal">
+        <div class="modal-box">
+            <h3><i class="fas fa-user-plus" style="color:#34a853;"></i> ایجاد کاربر جدید</h3>
+            <div id="createUserMsg" class="message"></div>
+            <form id="createUserForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>نام کاربری <span class="required">*</span></label>
+                        <input type="text" id="cuUsername" placeholder="نام کاربری" required minlength="3">
+                    </div>
+                    <div class="form-group">
+                        <label>رمز عبور <span class="required">*</span></label>
+                        <input type="text" id="cuPassword" placeholder="رمز عبور (حداقل ۴ کاراکتر)" required minlength="4">
+                    </div>
+                    <div class="form-group">
+                        <label>نام کامل</label>
+                        <input type="text" id="cuFullName" placeholder="نام و نام خانوادگی">
+                    </div>
+                    <div class="form-group">
+                        <label>تلفن</label>
+                        <input type="text" id="cuPhone" placeholder="شماره تلفن">
+                    </div>
+                    <div class="form-group">
+                        <label>ایمیل</label>
+                        <input type="email" id="cuEmail" placeholder="ایمیل">
+                    </div>
+                    <div class="form-group">
+                        <label>نقش</label>
+                        <select id="cuRole">
+                            <option value="user">کاربر عادی</option>
+                            <option value="admin">ادمین</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-success">✅ ایجاد کاربر</button>
+                    <button type="button" class="btn btn-outline" onclick="closeModal('createUserModal')">❌ انصراف</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============ MODAL: Assign Device to User ============ -->
+    <div class="modal-overlay" id="assignDeviceModal">
+        <div class="modal-box">
+            <h3><i class="fas fa-satellite" style="color:#34a853;"></i> اختصاص دستگاه به کاربر</h3>
+            <div id="assignDeviceMsg" class="message"></div>
+            <div id="assignDeviceUserInfo" style="padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;margin-bottom:15px;">
+                <strong>کاربر:</strong> <span id="assignDeviceUserName">---</span>
+            </div>
+            <div class="form-group">
+                <label>دستگاه‌های بدون کاربر</label>
+                <select id="assignDeviceSelect" style="width:100%;padding:10px;border-radius:10px;border:2px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#fff;">
+                    <option value="">-- انتخاب دستگاه --</option>
+                </select>
+                <div class="hint">فقط دستگاه‌هایی که به هیچ کاربری اختصاص ندارند نمایش داده می‌شوند</div>
+            </div>
+            <input type="hidden" id="assignDeviceUserId">
+            <div class="modal-actions">
+                <button class="btn btn-success" onclick="confirmAssignDevice()">✅ اختصاص دستگاه</button>
+                <button class="btn btn-outline" onclick="closeModal('assignDeviceModal')">❌ انصراف</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ MODAL: Device ============ -->
+    <div class="modal-overlay" id="deviceModal">
+        <div class="modal-box">
+            <h3><i class="fas fa-satellite" style="color:#667eea;"></i> ثبت دستگاه جدید</h3>
+            <div id="deviceModalMessage" class="message"></div>
+            <form id="deviceForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>شناسه دستگاه <span class="required">*</span></label>
+                        <input type="text" id="fDeviceId" placeholder="مثال: GK:7x9Pq2Rm" required>
+                    </div>
+                    <div class="form-group">
+                        <label>رمز عبور <span class="required">*</span></label>
+                        <input type="text" id="fPassword" placeholder="رمز عبور برای کاربر" required>
+                    </div>
+                    <div class="form-group">
+                        <label>اختصاص به کاربر</label>
+                        <select id="fUserId">
+                            <option value="">-- بدون کاربر --</option>
+                        </select>
+                        <div class="hint">می‌توانید دستگاه را به یک کاربر موجود اختصاص دهید</div>
+                    </div>
+                    <div class="form-group">
+                        <label>نام خریدار <span class="required">*</span></label>
+                        <input type="text" id="fBuyerName" placeholder="نام خریدار" required>
+                    </div>
+                    <div class="form-group">
+                        <label>نام خانوادگی خریدار <span class="required">*</span></label>
+                        <input type="text" id="fBuyerFamily" placeholder="نام خانوادگی" required>
+                    </div>
+                    <div class="form-group">
+                        <label>شماره تماس دارنده <span class="required">*</span></label>
+                        <input type="text" id="fOwnerPhone" placeholder="مثال: ۰۹۱۲۳۴۵۶۷۸۹" required>
+                        <div class="hint">شماره موبایل صاحب دستگاه</div>
+                    </div>
+                    <div class="form-group">
+                        <label>کد ملی</label>
+                        <input type="text" id="fNationalCode" placeholder="کد ملی">
+                    </div>
+                    <div class="form-group">
+                        <label>آدرس</label>
+                        <input type="text" id="fAddress" placeholder="آدرس کامل">
+                    </div>
+                    <div class="form-group">
+                        <label>نوع ماشین</label>
+                        <input type="text" id="fCarType" placeholder="مثال: پراید">
+                    </div>
+                    <div class="form-group">
+                        <label>شماره پلاک</label>
+                        <input type="text" id="fCarPlate" placeholder="مثال: ۱۲۳-۴۵۶">
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-primary">✅ ثبت دستگاه</button>
+                    <button type="button" class="btn btn-outline" onclick="closeModal('deviceModal')">❌ انصراف</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============ MODAL: Edit Password ============ -->
+    <div class="modal-overlay" id="editPasswordModal">
+        <div class="modal-box">
+            <h3><i class="fas fa-key" style="color:#f9ab00;"></i> تغییر رمز دستگاه</h3>
+            <p style="color:rgba(255,255,255,0.4);margin-bottom:15px;font-size:14px;" id="editDeviceIdLabel"></p>
+            <div class="form-group">
+                <label>رمز عبور جدید <span class="required">*</span></label>
+                <input type="text" id="editPasswordInput" placeholder="رمز جدید را وارد کنید" required minlength="4">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-primary" onclick="saveEditPassword()">✅ ذخیره</button>
+                <button class="btn btn-outline" onclick="closeModal('editPasswordModal')">❌ انصراف</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ MODAL: Admin Password ============ -->
+    <div class="modal-overlay" id="adminPasswordModal">
+        <div class="modal-box">
+            <h3><i class="fas fa-key" style="color:#667eea;"></i> تغییر رمز عبور</h3>
+            <div id="adminPassMsg" class="message"></div>
+            <form id="adminPassForm">
+                <div class="form-group">
+                    <label>رمز عبور فعلی <span class="required">*</span></label>
+                    <input type="password" id="apCurrent" placeholder="رمز فعلی را وارد کنید" required>
+                </div>
+                <div class="form-group">
+                    <label>رمز عبور جدید <span class="required">*</span></label>
+                    <input type="password" id="apNew" placeholder="رمز جدید (حداقل ۴ کاراکتر)" required minlength="4">
+                </div>
+                <div class="form-group">
+                    <label>تکرار رمز جدید <span class="required">*</span></label>
+                    <input type="password" id="apConfirm" placeholder="رمز جدید را دوباره وارد کنید" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-primary">✅ تغییر رمز</button>
+                    <button type="button" class="btn btn-outline" onclick="closeModal('adminPasswordModal')">❌ انصراف</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============ MODAL: Create Admin ============ -->
+    <div class="modal-overlay" id="adminCreateModal">
+        <div class="modal-box">
+            <h3><i class="fas fa-user-plus" style="color:#7c3aed;"></i> ایجاد ادمین جدید</h3>
+            <div id="adminCreateMsg" class="message"></div>
+            <form id="adminCreateForm">
+                <div class="form-group">
+                    <label>نام کاربری <span class="required">*</span></label>
+                    <input type="text" id="acUsername" placeholder="نام کاربری" required minlength="3">
+                </div>
+                <div class="form-group">
+                    <label>نام کامل</label>
+                    <input type="text" id="acFullName" placeholder="نام و نام خانوادگی">
+                </div>
+                <div class="form-group">
+                    <label>رمز عبور <span class="required">*</span></label>
+                    <input type="text" id="acPassword" placeholder="رمز عبور (حداقل ۴ کاراکتر)" required minlength="4">
+                </div>
+                <div class="form-group">
+                    <label>نوع کاربر</label>
+                    <select id="acType">
+                        <option value="false">ادمین معمولی</option>
+                        <option value="true">سوپر ادمین</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-primary">✅ ایجاد ادمین</button>
+                    <button type="button" class="btn btn-outline" onclick="closeModal('adminCreateModal')">❌ انصراف</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============ MODAL: Edit Admin ============ -->
+    <div class="modal-overlay" id="adminEditModal">
+        <div class="modal-box">
+            <h3><i class="fas fa-edit" style="color:#f9ab00;"></i> ویرایش ادمین</h3>
+            <div id="adminEditMsg" class="message"></div>
+            <div class="form-group">
+                <label>نام کاربری جدید</label>
+                <input type="text" id="aeNewUsername" placeholder="نام کاربری جدید" required minlength="3">
+            </div>
+            <div class="form-group">
+                <label>نام کامل</label>
+                <input type="text" id="aeFullName" placeholder="نام و نام خانوادگی">
+            </div>
+            <input type="hidden" id="aeOldUsername">
+            <div class="modal-actions">
+                <button class="btn btn-primary" onclick="saveAdminEdit()">✅ ذخیره</button>
+                <button class="btn btn-outline" onclick="closeModal('adminEditModal')">❌ انصراف</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        // STATE
+        // ============================================================
+        let currentUser = '';
+        let isSuperAdmin = false;
+        let devices = [];
+        let users = [];
+        let admins = [];
+        let editingDeviceId = null;
+        let shopStats = { products: 0, categories: 0, slides: 0, views: 0 };
+
+        // ============================================================
+        // INIT
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', async () => {
+            await checkAdmin();
+            await loadUsers();
+            await loadDevices();
+            await loadAdmins();
+            await loadShopStats();
+            updateStats();
+            setupMenu();
+            loadUserSelect();
+        });
+
+        // ============================================================
+        // SIDEBAR MENU
+        // ============================================================
+        function setupMenu() {
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const section = this.dataset.section;
+                    switchSection(section);
+                });
+            });
+        }
+
+        function switchSection(section) {
+            document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+            document.querySelector(`.menu-item[data-section="${section}"]`)?.classList.add('active');
+
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            document.getElementById('section-' + section).classList.add('active');
+
+            const titles = {
+                dashboard: ['📊 نمای کلی', 'خلاصه وضعیت سیستم'],
+                users: ['👥 کاربران', 'مدیریت کاربران سیستم'],
+                devices: ['📡 دستگاه‌ها', 'مدیریت دستگاه‌های GPS'],
+                admins: ['👑 ادمین‌ها', 'مدیریت کاربران ادمین'],
+                shop: ['🛒 مدیریت فروشگاه', 'مدیریت محصولات، دسته‌بندی‌ها و اسلایدها'],
+                settings: ['⚙️ تنظیمات', 'تنظیمات سیستم']
+            };
+            const [title, sub] = titles[section] || ['', ''];
+            document.getElementById('pageTitle').textContent = title;
+            document.getElementById('pageSubtitle').textContent = sub;
+        }
+
+        // ============================================================
+        // CHECK ADMIN
+        // ============================================================
+        async function checkAdmin() {
+            try {
+                const res = await fetch('/api/admin-check');
+                const data = await res.json();
+
+                if (!data.isLoggedIn) {
+                    window.location.href = '/admin-login.html';
+                    return;
+                }
+
+                currentUser = data.username;
+                isSuperAdmin = data.isSuperAdmin || false;
+
+                document.getElementById('adminName').textContent = currentUser;
+                document.getElementById('adminAvatar').textContent = currentUser.charAt(0).toUpperCase();
+                document.getElementById('adminRole').textContent = isSuperAdmin ? '⭐ سوپر ادمین' : '👤 ادمین';
+                document.getElementById('settingsUsername').value = currentUser;
+                document.getElementById('settingsRole').value = isSuperAdmin ? 'سوپر ادمین' : 'ادمین';
+
+                if (!isSuperAdmin) {
+                    document.getElementById('adminMenu').style.display = 'none';
+                }
+            } catch (e) {
+                window.location.href = '/admin-login.html';
+            }
+        }
+
+        // ============================================================
+        // LOGOUT
+        // ============================================================
+        async function logout() {
+            await fetch('/api/admin-logout', { method: 'POST' });
+            window.location.href = '/admin-login.html';
+        }
+
+        // ============================================================
+        // MODAL HELPERS
+        // ============================================================
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        document.querySelectorAll('.modal-overlay').forEach(el => {
+            el.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            });
+        });
+
+        // ============================================================
+        // LOAD USERS
+        // ============================================================
+        async function loadUsers() {
+            try {
+                const res = await fetch('/api/admin/users');
+                users = await res.json();
+
+                const tbody = document.getElementById('usersTableBody');
+                if (users.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="8" class="empty-state">
+                    <i class="fas fa-users" style="font-size:32px;"></i>
+                    <h3>هیچ کاربری ثبت نشده</h3>
+                </td></tr>`;
+                } else {
+                    tbody.innerHTML = users.map((u, i) => `
+                        <tr>
+                            <td>${i + 1}</td>
+                            <td><strong style="color:#fff;">${u.username}</strong></td>
+                            <td>${u.full_name || '-'}</td>
+                            <td>${u.phone || '-'}</td>
+                            <td><span class="badge" style="background:rgba(102,126,234,0.2);color:#667eea;">${u.device_count || 0}</span></td>
+                            <td><span class="status-badge ${u.is_active ? 'active' : 'inactive'}">
+                                ${u.is_active ? '✅ فعال' : '❌ غیرفعال'}
+                            </span></td>
+                            <td style="font-size:12px;color:rgba(255,255,255,0.3);">${new Date(u.created_at).toLocaleDateString('fa-IR')}</td>
+                            <td>
+                                <div class="table-actions">
+                                    <button class="btn-icon view" onclick="viewUserDevices('${u.id}')" title="دستگاه‌ها">
+                                        <i class="fas fa-satellite"></i>
+                                    </button>
+                                    <button class="btn-icon assign" onclick="openAssignDeviceModal('${u.id}', '${u.username}')" title="اختصاص دستگاه">
+                                        <i class="fas fa-link"></i>
+                                    </button>
+                                    <button class="btn-icon toggle" onclick="toggleUserStatus('${u.id}', ${u.is_active})" title="تغییر وضعیت">
+                                        <i class="fas ${u.is_active ? 'fa-pause' : 'fa-play'}"></i>
+                                    </button>
+                                    <button class="btn-icon delete" onclick="deleteUser('${u.id}')" title="حذف">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+
+                document.getElementById('userBadge').textContent = users.length;
+                updateStats();
+            } catch (e) {
+                console.error('Error loading users:', e);
+            }
+        }
+
+        // ============================================================
+        // LOAD DEVICES
+        // ============================================================
+        async function loadDevices() {
+            try {
+                const res = await fetch('/api/devices');
+                devices = await res.json();
+
+                const tbody = document.getElementById('devicesTableBody');
+                if (devices.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="8" class="empty-state">
+                    <i class="fas fa-satellite" style="font-size:32px;"></i>
+                    <h3>هیچ دستگاهی ثبت نشده</h3>
+                </td></tr>`;
+                } else {
+                    tbody.innerHTML = devices.map(d => `
+                        <tr>
+                            <td><strong style="color:#fff;">${d.device_id}</strong></td>
+                            <td>${d.user_username ? `<span class="status-badge active">${d.user_username}</span>` : 
+                                `<span class="status-badge pending">بدون کاربر</span>`}</td>
+                            <td>${d.buyer_name || '-'} ${d.buyer_family || ''}</td>
+                            <td>${d.owner_phone || '-'}</td>
+                            <td>${d.car_type || '-'} ${d.car_plate ? '('+d.car_plate+')' : ''}</td>
+                            <td><span class="status-badge ${d.is_first_login ? 'pending' : 'active'}">
+                                ${d.is_first_login ? '⏳ منتظر ورود' : '✅ فعال'}
+                            </span></td>
+                            <td style="font-size:11px;color:rgba(255,255,255,0.3);">
+                                ${d.last_latitude ? `${d.last_latitude.toFixed(6)}, ${d.last_longitude.toFixed(6)}` : '---'}
+                            </td>
+                            <td>
+                                <div class="table-actions">
+                                    <button class="btn-icon edit" onclick="openEditPassword('${d.device_id}')" title="تغییر رمز">
+                                        <i class="fas fa-key"></i>
+                                    </button>
+                                    <button class="btn-icon assign" onclick="quickAssignDevice('${d.device_id}')" title="اختصاص به کاربر">
+                                        <i class="fas fa-user-plus"></i>
+                                    </button>
+                                    <button class="btn-icon delete" onclick="deleteDevice('${d.device_id}')" title="حذف">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+
+                document.getElementById('deviceBadge').textContent = devices.length;
+
+                const pending = devices.filter(d => d.is_first_login).length;
+                document.getElementById('statPending').textContent = pending;
+
+                updateStats();
+            } catch (e) {
+                console.error('Error loading devices:', e);
+            }
+        }
+
+        // ============================================================
+        // LOAD ADMINS
+        // ============================================================
+        async function loadAdmins() {
+            try {
+                const res = await fetch('/api/admins');
+                admins = await res.json();
+
+                const tbody = document.getElementById('adminsTableBody');
+                if (admins.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="empty-state">
+                    <i class="fas fa-user-shield" style="font-size:32px;"></i>
+                    <h3>هیچ ادمینی ثبت نشده</h3>
+                </td></tr>`;
+                } else {
+                    tbody.innerHTML = admins.map(a => `
+                        <tr>
+                            <td><strong style="color:#fff;">${a.username}</strong></td>
+                            <td>${a.full_name || '-'}</td>
+                            <td><span class="status-badge ${a.is_super_admin ? 'super' : 'admin'}">
+                                ${a.is_super_admin ? '⭐ سوپر ادمین' : '👤 ادمین'}
+                            </span></td>
+                            <td style="font-size:12px;color:rgba(255,255,255,0.3);">${new Date(a.created_at).toLocaleDateString('fa-IR')}</td>
+                            <td>
+                                <div class="table-actions">
+                                    ${!a.is_super_admin ? `
+                                        <button class="btn-icon edit" onclick="openAdminEdit('${a.username}')" title="ویرایش">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn-icon delete" onclick="deleteAdmin('${a.username}')" title="حذف">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    ` : `
+                                        <span style="font-size:11px;color:rgba(255,255,255,0.2);">قابل ویرایش نیست</span>
+                                    `}
+                                </div>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+
+                document.getElementById('adminBadge').textContent = admins.length;
+                updateStats();
+            } catch (e) {
+                console.error('Error loading admins:', e);
+            }
+        }
+
+        // ============================================================
+        // LOAD SHOP STATS
+        // ============================================================
+        async function loadShopStats() {
+            try {
+                const shopRes = await fetch('/api/shop/main');
+                if (!shopRes.ok) return;
+                const shop = await shopRes.json();
+
+                if (!shop) return;
+
+                const [productsRes, categoriesRes, slidesRes] = await Promise.all([
+                    fetch('/api/shop/' + shop.id + '/products'),
+                    fetch('/api/shop/' + shop.id + '/categories'),
+                    fetch('/api/shop/' + shop.id + '/slides')
+                ]);
+
+                const products = await productsRes.json();
+                const categories = await categoriesRes.json();
+                const slides = await slidesRes.json();
+
+                shopStats.products = products.length;
+                shopStats.categories = categories.length;
+                shopStats.slides = slides.length;
+                shopStats.views = products.reduce((sum, p) => sum + (p.views || 0), 0);
+
+                document.getElementById('shopProductsCount').textContent = shopStats.products;
+                document.getElementById('shopCategoriesCount').textContent = shopStats.categories;
+                document.getElementById('shopSlidesCount').textContent = shopStats.slides;
+                document.getElementById('shopTotalViews').textContent = shopStats.views.toLocaleString('fa-IR');
+                document.getElementById('settingsShopProducts').value = shopStats.products;
+
+            } catch (e) {
+                console.error('Error loading shop stats:', e);
+            }
+        }
+
+        // ============================================================
+        // UPDATE STATS
+        // ============================================================
+        function updateStats() {
+            document.getElementById('statUsers').textContent = users.length;
+            document.getElementById('statDevices').textContent = devices.length;
+            document.getElementById('statAdmins').textContent = admins.length;
+            document.getElementById('statOnline').textContent = devices.filter(d => !d.is_first_login).length;
+
+            document.getElementById('settingsUsersCount').value = users.length;
+            document.getElementById('settingsDevicesCount').value = devices.length;
+            document.getElementById('settingsAdminsCount').value = admins.length;
+
+            const today = new Date().toDateString();
+            const newUsers = users.filter(u => new Date(u.created_at).toDateString() === today);
+            document.getElementById('statNewUsers').textContent = newUsers.length;
+        }
+
+        // ============================================================
+        // LOAD USER SELECT
+        // ============================================================
+        async function loadUserSelect() {
+            try {
+                const res = await fetch('/api/admin/users');
+                const usersList = await res.json();
+
+                const selects = ['fUserId'];
+                selects.forEach(id => {
+                    const select = document.getElementById(id);
+                    if (select) {
+                        select.innerHTML = `<option value="">-- بدون کاربر --</option>` +
+                            usersList.map(u => `<option value="${u.id}">${u.username} (${u.full_name || ''})</option>`).join(
+                            '');
+                    }
+                });
+            } catch (e) {}
+        }
+
+        // ============================================================
+        // CREATE USER (ADMIN)
+        // ============================================================
+        function openCreateUserModal() {
+            document.getElementById('createUserMsg').className = 'message';
+            document.getElementById('createUserMsg').style.display = 'none';
+            document.getElementById('createUserForm').reset();
+            openModal('createUserModal');
+        }
+
+        document.getElementById('createUserForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const data = {
+                username: document.getElementById('cuUsername').value.trim(),
+                password: document.getElementById('cuPassword').value.trim(),
+                fullName: document.getElementById('cuFullName').value.trim(),
+                phone: document.getElementById('cuPhone').value.trim(),
+                email: document.getElementById('cuEmail').value.trim(),
+                role: document.getElementById('cuRole').value
+            };
+
+            const msg = document.getElementById('createUserMsg');
+            msg.className = 'message';
+            msg.style.display = 'none';
+
+            if (data.password.length < 4) {
+                msg.className = 'message error';
+                msg.textContent = '❌ رمز عبور باید حداقل ۴ کاراکتر باشد';
+                msg.style.display = 'flex';
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/register-user', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await res.json();
+
+                if (res.ok) {
+                    msg.className = 'message success';
+                    msg.textContent = '✅ ' + result.message;
+                    msg.style.display = 'flex';
+                    document.getElementById('createUserForm').reset();
+                    await loadUsers();
+                    await loadUserSelect();
+                    setTimeout(() => closeModal('createUserModal'), 1000);
+                } else {
+                    msg.className = 'message error';
+                    msg.textContent = '❌ ' + (result.error || 'خطا');
+                    msg.style.display = 'flex';
+                }
+            } catch (e) {
+                msg.className = 'message error';
+                msg.textContent = '❌ خطا در ارتباط با سرور';
+                msg.style.display = 'flex';
+            }
+        });
+
+        // ============================================================
+        // ASSIGN DEVICE TO USER
+        // ============================================================
+        let assignUserId = null;
+
+        async function openAssignDeviceModal(userId, username) {
+            assignUserId = userId;
+            document.getElementById('assignDeviceUserName').textContent = username;
+            document.getElementById('assignDeviceUserId').value = userId;
+            document.getElementById('assignDeviceMsg').className = 'message';
+            document.getElementById('assignDeviceMsg').style.display = 'none';
+
+            try {
+                const res = await fetch('/api/admin/unassigned-devices');
+                const devicesList = await res.json();
+                const select = document.getElementById('assignDeviceSelect');
+                select.innerHTML = '<option value="">-- انتخاب دستگاه --</option>' +
+                    devicesList.map(d =>
+                        `<option value="${d.device_id}">${d.device_id} - ${d.buyer_name || ''} ${d.buyer_family || ''}</option>`
+                        ).join('');
+
+                if (devicesList.length === 0) {
+                    select.innerHTML = '<option value="">-- هیچ دستگاهی بدون کاربر نیست --</option>';
+                }
+            } catch (e) {
+                console.error('Error loading unassigned devices:', e);
+            }
+
+            openModal('assignDeviceModal');
+        }
+
+        async function confirmAssignDevice() {
+            const deviceId = document.getElementById('assignDeviceSelect').value;
+            const userId = document.getElementById('assignDeviceUserId').value;
+            const msg = document.getElementById('assignDeviceMsg');
+
+            msg.className = 'message';
+            msg.style.display = 'none';
+
+            if (!deviceId) {
+                msg.className = 'message error';
+                msg.textContent = '❌ لطفاً یک دستگاه انتخاب کنید';
+                msg.style.display = 'flex';
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/admin/assign-device', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ deviceId, userId })
+                });
+                const result = await res.json();
+
+                if (res.ok) {
+                    msg.className = 'message success';
+                    msg.textContent = '✅ ' + result.message;
+                    msg.style.display = 'flex';
+                    await loadDevices();
+                    await loadUsers();
+                    setTimeout(() => closeModal('assignDeviceModal'), 1000);
+                } else {
+                    msg.className = 'message error';
+                    msg.textContent = '❌ ' + (result.error || 'خطا');
+                    msg.style.display = 'flex';
+                }
+            } catch (e) {
+                msg.className = 'message error';
+                msg.textContent = '❌ خطا در ارتباط با سرور';
+                msg.style.display = 'flex';
+            }
+        }
+
+        async function quickAssignDevice(deviceId) {
+            try {
+                const res = await fetch('/api/admin/users');
+                const usersList = await res.json();
+
+                if (usersList.length === 0) {
+                    alert('❌ هیچ کاربری برای اختصاص وجود ندارد');
+                    return;
+                }
+
+                const choice = prompt('شناسه کاربر را وارد کنید:\n' + usersList.map(u =>
+                    `${u.id}: ${u.username} (${u.full_name || ''})`).join('\n'));
+
+                if (!choice) return;
+
+                const userId = parseInt(choice);
+                if (isNaN(userId)) {
+                    alert('❌ شناسه نامعتبر');
+                    return;
+                }
+
+                const res2 = await fetch('/api/admin/assign-device', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ deviceId, userId })
+                });
+                const result = await res2.json();
+
+                if (res2.ok) {
+                    alert('✅ دستگاه با موفقیت به کاربر اختصاص یافت');
+                    await loadDevices();
+                    await loadUsers();
+                } else {
+                    alert('❌ ' + (result.error || 'خطا'));
+                }
+            } catch (e) {
+                alert('❌ خطا در ارتباط با سرور');
+            }
+        }
+
+        // ============================================================
+        // VIEW USER DEVICES
+        // ============================================================
+        async function viewUserDevices(userId) {
+            try {
+                const res = await fetch('/api/admin/user-devices/' + userId);
+                const devicesList = await res.json();
+
+                if (devicesList.length === 0) {
+                    alert('📱 این کاربر هیچ دستگاهی ندارد');
+                    return;
+                }
+
+                let msg = '📱 دستگاه‌های کاربر:\n\n';
+                devicesList.forEach((d, i) => {
+                    msg += `${i+1}. ${d.device_id}\n`;
+                    msg += `   خریدار: ${d.buyer_name || ''} ${d.buyer_family || ''}\n`;
+                    msg += `   شماره دارنده: ${d.owner_phone || '-'}\n`;
+                    msg += `   ماشین: ${d.car_type || '-'} ${d.car_plate || ''}\n`;
+                    msg += `   وضعیت: ${d.is_active ? '✅ فعال' : '❌ غیرفعال'}\n\n`;
+                });
+                alert(msg);
+            } catch (e) {
+                alert('❌ خطا در دریافت دستگاه‌ها');
+            }
+        }
+
+        // ============================================================
+        // TOGGLE USER STATUS
+        // ============================================================
+        async function toggleUserStatus(userId, currentStatus) {
+            if (!confirm(`آیا از ${currentStatus ? 'غیرفعال' : 'فعال'} کردن این کاربر مطمئن هستید؟`)) return;
+
+            try {
+                const res = await fetch('/api/admin/toggle-user', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId, isActive: !currentStatus })
+                });
+                const result = await res.json();
+
+                if (res.ok) {
+                    alert('✅ وضعیت کاربر تغییر کرد');
+                    await loadUsers();
+                } else {
+                    alert('❌ ' + (result.error || 'خطا'));
+                }
+            } catch (e) {
+                alert('❌ خطا در ارتباط با سرور');
+            }
+        }
+
+        // ============================================================
+        // DELETE USER
+        // ============================================================
+        async function deleteUser(userId) {
+            if (!confirm('⚠️ آیا از حذف این کاربر مطمئن هستید؟\nهمه دستگاه‌های این کاربر نیز حذف خواهند شد!')) return;
+
+            try {
+                const res = await fetch('/api/admin/user/' + userId, {
+                    method: 'DELETE'
+                });
+                const result = await res.json();
+
+                if (res.ok) {
+                    alert('✅ کاربر با موفقیت حذف شد');
+                    await loadUsers();
+                    await loadDevices();
+                    await loadUserSelect();
+                } else {
+                    alert('❌ ' + (result.error || 'خطا'));
+                }
+            } catch (e) {
+                alert('❌ خطا در ارتباط با سرور');
+            }
+        }
+
+        // ============================================================
+        // DEVICE CRUD
+        // ============================================================
+        function openDeviceModal() {
+            document.getElementById('deviceModalMessage').className = 'message';
+            document.getElementById('deviceModalMessage').style.display = 'none';
+            document.getElementById('deviceForm').reset();
+            loadUserSelect();
+            openModal('deviceModal');
+        }
+
+        document.getElementById('deviceForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const data = {
+                deviceId: document.getElementById('fDeviceId').value.trim(),
+                password: document.getElementById('fPassword').value.trim(),
+                buyerName: document.getElementById('fBuyerName').value.trim(),
+                buyerFamily: document.getElementById('fBuyerFamily').value.trim(),
+                ownerPhone: document.getElementById('fOwnerPhone').value.trim(),
+                nationalCode: document.getElementById('fNationalCode').value.trim(),
+                address: document.getElementById('fAddress').value.trim(),
+                carType: document.getElementById('fCarType').value.trim(),
+                carPlate: document.getElementById('fCarPlate').value.trim(),
+                userId: document.getElementById('fUserId').value || null
+            };
+
+            const msg = document.getElementById('deviceModalMessage');
+            msg.className = 'message';
+            msg.style.display = 'none';
+
+            if (!data.ownerPhone) {
+                msg.className = 'message error';
+                msg.textContent = '❌ شماره تماس دارنده الزامی است';
+                msg.style.display = 'flex';
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/register-device', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await res.json();
+
+                if (res.ok) {
+                    if (data.userId) {
+                        await fetch('/api/admin/assign-device', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ deviceId: data.deviceId, userId: data.userId })
+                        });
+                    }
+
+                    msg.className = 'message success';
+                    msg.textContent = '✅ ' + result.message;
+                    msg.style.display = 'flex';
+                    document.getElementById('deviceForm').reset();
+                    await loadDevices();
+                    await loadUsers();
+                    setTimeout(() => closeModal('deviceModal'), 1000);
+                } else {
+                    msg.className = 'message error';
+                    msg.textContent = '❌ ' + (result.error || 'خطا');
+                    msg.style.display = 'flex';
+                }
+            } catch (e) {
+                msg.className = 'message error';
+                msg.textContent = '❌ خطا در ارتباط با سرور';
+                msg.style.display = 'flex';
+            }
+        });
+
+        // ============================================================
+        // EDIT PASSWORD
+        // ============================================================
+        function openEditPassword(deviceId) {
+            editingDeviceId = deviceId;
+            document.getElementById('editDeviceIdLabel').textContent = `دستگاه: ${deviceId}`;
+            document.getElementById('editPasswordInput').value = '';
+            openModal('editPasswordModal');
+        }
+
+        async function saveEditPassword() {
+            const newPass = document.getElementById('editPasswordInput').value.trim();
+
+            if (!newPass || newPass.length < 4) {
+                alert('❌ رمز عبور باید حداقل ۴ کاراکتر باشد');
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/admin-change-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ deviceId: editingDeviceId, newPassword: newPass })
+                });
+                const result = await res.json();
+
+                if (res.ok) {
+                    alert('✅ رمز عبور با موفقیت تغییر کرد');
+                    closeModal('editPasswordModal');
+                    await loadDevices();
+                } else {
+                    alert('❌ ' + (result.error || 'خطا'));
+                }
+            } catch (e) {
+                alert('❌ خطا در ارتباط با سرور');
+            }
+        }
+
+        // ============================================================
+        // DELETE DEVICE
+        // ============================================================
+        async function deleteDevice(deviceId) {
+            if (!confirm(`⚠️ آیا از حذف دستگاه ${deviceId} مطمئن هستید؟\nهمه سفرهای این دستگاه نیز حذف خواهند شد!`)) return;
+
+            try {
+                const res = await fetch('/api/admin-delete-device', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ deviceId })
+                });
+                const result = await res.json();
+
+                if (res.ok) {
+                    alert('✅ دستگاه با موفقیت حذف شد');
+                    await loadDevices();
+                    await loadUsers();
+                } else {
+                    alert('❌ ' + (result.error || 'خطا'));
+                }
+            } catch (e) {
+                alert('❌ خطا در ارتباط با سرور');
+            }
+        }
+
+        // ============================================================
+        // ADMIN PASSWORD
+        // ============================================================
+        function openPasswordModal() {
+            document.getElementById('adminPassMsg').className = 'message';
+            document.getElementById('adminPassMsg').style.display = 'none';
+            document.getElementById('adminPassForm').reset();
+            openModal('adminPasswordModal');
+        }
+
+        document.getElementById('adminPassForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const current = document.getElementById('apCurrent').value.trim();
+            const newPass = document.getElementById('apNew').value.trim();
+            const confirm = document.getElementById('apConfirm').value.trim();
+            const msg = document.getElementById('adminPassMsg');
+
+            msg.className = 'message';
+            msg.style.display = 'none';
+
+            if (newPass !== confirm) {
+                msg.className = 'message error';
+                msg.textContent = '❌ رمز عبور جدید و تکرار آن مطابقت ندارند';
+                msg.style.display = 'flex';
+                return;
+            }
+
+            if (newPass.length < 4) {
+                msg.className = 'message error';
+                msg.textContent = '❌ رمز عبور جدید باید حداقل ۴ کاراکتر باشد';
+                msg.style.display = 'flex';
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/admin-change-own-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ currentPassword: current, newPassword: newPass })
+                });
+                const result = await res.json();
+
+                if (res.ok) {
+                    msg.className = 'message success';
+                    msg.textContent = '✅ ' + result.message;
+                    msg.style.display = 'flex';
+                    document.getElementById('adminPassForm').reset();
+                    setTimeout(() => closeModal('adminPasswordModal'), 1500);
+                } else {
+                    msg.className = 'message error';
+                    msg.textContent = '❌ ' + (result.error || 'خطا');
+                    msg.style.display = 'flex';
+                }
+            } catch (e) {
+                msg.className = 'message error';
+                msg.textContent = '❌ خطا در ارتباط با سرور';
+                msg.style.display = 'flex';
+            }
+        });
+
+        // ============================================================
+        // ADMIN MANAGEMENT
+        // ============================================================
+        function openAdminCreateModal() {
+            document.getElementById('adminCreateMsg').className = 'message';
+            document.getElementById('adminCreateMsg').style.display = 'none';
+            document.getElementById('adminCreateForm').reset();
+            openModal('adminCreateModal');
+        }
+
+        document.getElementById('adminCreateForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const username = document.getElementById('acUsername').value.trim();
+            const password = document.getElementById('acPassword').value.trim();
+            const fullName = document.getElementById('acFullName').value.trim();
+            const isSuper = document.getElementById('acType').value === 'true';
+            const msg = document.getElementById('adminCreateMsg');
+
+            msg.className = 'message';
+            msg.style.display = 'none';
+
+            try {
+                const res = await fetch('/api/admin-create', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password, fullName, isSuperAdmin: isSuper })
+                });
+                const result = await res.json();
+
+                if (res.ok) {
+                    msg.className = 'message success';
+                    msg.textContent = '✅ ' + result.message;
+                    msg.style.display = 'flex';
+                    document.getElementById('adminCreateForm').reset();
+                    await loadAdmins();
+                    setTimeout(() => closeModal('adminCreateModal'), 1000);
+                } else {
+                    msg.className = 'message error';
+                    msg.textContent = '❌ ' + (result.error || 'خطا');
+                    msg.style.display = 'flex';
+                }
+            } catch (e) {
+                msg.className = 'message error';
+                msg.textContent = '❌ خطا در ارتباط با سرور';
+                msg.style.display = 'flex';
+            }
+        });
+
+        function openAdminEdit(username) {
+            document.getElementById('aeOldUsername').value = username;
+            document.getElementById('aeNewUsername').value = '';
+            document.getElementById('aeFullName').value = '';
+            document.getElementById('adminEditMsg').className = 'message';
+            document.getElementById('adminEditMsg').style.display = 'none';
+            openModal('adminEditModal');
+        }
+
+        async function saveAdminEdit() {
+            const oldUsername = document.getElementById('aeOldUsername').value;
+            const newUsername = document.getElementById('aeNewUsername').value.trim();
+            const fullName = document.getElementById('aeFullName').value.trim();
+            const msg = document.getElementById('adminEditMsg');
+
+            msg.className = 'message';
+            msg.style.display = 'none';
+
+            if (!newUsername || newUsername.length < 3) {
+                msg.className = 'message error';
+                msg.textContent = '❌ نام کاربری باید حداقل ۳ کاراکتر باشد';
+                msg.style.display = 'flex';
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/admin-change-username', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ oldUsername, newUsername })
+                });
+                const result = await res.json();
+
+                if (res.ok) {
+                    if (fullName) {
+                        await fetch('/api/admin-update', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ username: newUsername, fullName })
+                        });
+                    }
+
+                    msg.className = 'message success';
+                    msg.textContent = '✅ ' + result.message;
+                    msg.style.display = 'flex';
+                    await loadAdmins();
+                    setTimeout(() => closeModal('adminEditModal'), 1000);
+                } else {
+                    msg.className = 'message error';
+                    msg.textContent = '❌ ' + (result.error || 'خطا');
+                    msg.style.display = 'flex';
+                }
+            } catch (e) {
+                msg.className = 'message error';
+                msg.textContent = '❌ خطا در ارتباط با سرور';
+                msg.style.display = 'flex';
+            }
+        }
+
+        async function deleteAdmin(username) {
+            if (!confirm(`⚠️ آیا از حذف ادمین ${username} مطمئن هستید؟`)) return;
+
+            try {
+                const res = await fetch('/api/admin-delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username })
+                });
+                const result = await res.json();
+
+                if (res.ok) {
+                    alert('✅ ' + result.message);
+                    await loadAdmins();
+                } else {
+                    alert('❌ ' + (result.error || 'خطا'));
+                }
+            } catch (e) {
+                alert('❌ خطا در ارتباط با سرور');
+            }
+        }
+
+        // ============================================================
+        // SEARCH
+        // ============================================================
+        function globalSearch(query) {
+            query = query.toLowerCase().trim();
+            const currentSection = document.querySelector('.content-section.active');
+            if (!currentSection) return;
+
+            const rows = currentSection.querySelectorAll('table tbody tr:not(.empty-state)');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(query) ? '' : 'none';
+            });
+        }
+
+        // ============================================================
+        // REFRESH ALL
+        // ============================================================
+        function refreshAll() {
+            loadUsers();
+            loadDevices();
+            loadAdmins();
+            loadShopStats();
+        }
+
+        console.log('🚀 پنل مدیریت حرفه‌ای آماده است!');
+    </script>
+
+</body>
+</html>

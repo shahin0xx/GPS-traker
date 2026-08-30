@@ -1,0 +1,14 @@
+{
+  "alerts": [
+    {
+      "deviceId": "GK:7x9Pq2Rn",
+      "targetDistance": 6000,
+      "message": "تعویض روغن",
+      "currentDistance": 4.471008564668169,
+      "lastLat": 36.19677,
+      "lastLng": 58.783939,
+      "isTriggered": false,
+      "createdAt": "2026-08-05T19:24:30.095Z"
+    }
+  ]
+}

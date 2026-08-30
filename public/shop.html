@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فروشگاه GPS Tracker</title>
+    <link rel="icon" href="/ico.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4facfe;
+            --secondary: #7c3aed;
+            --bg-dark: #0c0e1a;
+            --bg-card: rgba(255, 255, 255, 0.03);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.6);
+            --text-muted: rgba(255, 255, 255, 0.25);
+            --border-color: rgba(255, 255, 255, 0.06);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --transition: all 0.3s ease;
+            --font: 'Inter', sans-serif;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: var(--font);
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            direction: rtl;
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+
+        /* ===== HEADER ===== */
+        .app-header {
+            background: rgba(12, 14, 26, 0.92);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(20px);
+            min-height: 64px;
+        }
+        .app-header .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+        .app-header .brand .logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            background: rgba(255,255,255,0.05);
+        }
+        .app-header .brand .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .app-header .brand .brand-text h1 {
+            font-size: 16px; font-weight: 700; color: white;
+        }
+        .app-header .brand .brand-text span {
+            font-size: 10px; color: var(--text-secondary);
+        }
+        .app-header .user-menu {
+            display: flex; align-items: center; gap: 12px;
+        }
+        .app-header .user-menu .user-badge {
+            display: flex; align-items: center; gap: 10px;
+            background: rgba(255,255,255,0.04);
+            padding: 6px 14px 6px 6px;
+            border-radius: 30px;
+            border: 1px solid var(--border-color);
+        }
+        .app-header .user-menu .user-badge .avatar {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: 700; color: white;
+        }
+        .app-header .user-menu .user-badge .user-info-text .name {
+            font-size: 13px; font-weight: 600; color: white;
+        }
+        .app-header .user-menu .user-badge .user-info-text .device-id-small {
+            font-size: 9px; color: var(--text-secondary); direction: ltr;
+        }
+        .app-header .user-menu .btn-icon {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            width: 38px; height: 38px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 15px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+        .app-header .user-menu .btn-icon:hover {
+            background: rgba(255,255,255,0.08);
+            color: white;
+        }
+        .app-header .user-menu .btn-icon.danger:hover {
+            background: rgba(234,67,53,0.2);
+            color: #ff6b6b;
+        }
+        .app-header .user-menu .btn-icon.active {
+            background: rgba(79,172,254,0.15);
+            color: var(--primary);
+        }
+
+        /* ===== CONTAINER ===== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* ===== SLIDER ===== */
+        .slider-container {
+            position: relative;
+            border-radius: var(--radius);
+            overflow: hidden;
+            margin-bottom: 40px;
+            height: 380px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+        }
+        .slider-track {
+            display: flex;
+            transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            height: 100%;
+        }
+        .slider-slide {
+            min-width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-size: cover;
+            background-position: center;
+        }
+        .slider-slide .slide-content {
+            text-align: center;
+            padding: 40px;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(4px);
+            border-radius: var(--radius);
+            max-width: 600px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .slider-slide .slide-content h2 {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+        .slider-slide .slide-content h2 span {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .slider-slide .slide-content p {
+            color: var(--text-secondary);
+            font-size: 16px;
+            margin-bottom: 16px;
+        }
+        .slider-slide .slide-content .btn {
+            padding: 12px 32px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-block;
+            font-family: var(--font);
+        }
+        .slider-slide .slide-content .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+        .slider-slide .slide-content .btn-primary:hover {
+            transform: scale(1.05);
+        }
+        .slider-slide .slide-content .btn-outline {
+            background: transparent;
+            border: 2px solid rgba(255,255,255,0.2);
+            color: white;
+        }
+        .slider-slide .slide-content .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .slider-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 18px;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .slider-btn:hover {
+            background: rgba(255,255,255,0.15);
+        }
+        .slider-btn.prev { right: 16px; }
+        .slider-btn.next { left: 16px; }
+
+        .slider-dots {
+            position: absolute;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+        .slider-dots .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .slider-dots .dot.active {
+            background: var(--primary);
+            width: 30px;
+            border-radius: 5px;
+        }
+
+        /* ===== LOGO SECTION ===== */
+        .logo-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 50px;
+            position: relative;
+        }
+        .logo-circle {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(79,172,254,0.1), rgba(124,58,237,0.1));
+            border: 3px solid rgba(79,172,254,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            animation: pulse-circle 3s ease-in-out infinite;
+        }
+        @keyframes pulse-circle {
+            0%, 100% { box-shadow: 0 0 20px rgba(79,172,254,0.1); }
+            50% { box-shadow: 0 0 60px rgba(79,172,254,0.2); }
+        }
+        .logo-circle .logo-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.05);
+        }
+        .logo-circle .logo-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .logo-circle .ring-1 {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            border: 1px dashed rgba(79,172,254,0.15);
+            animation: spin-ring 20s linear infinite;
+        }
+        .logo-circle .ring-2 {
+            position: absolute;
+            width: 240px;
+            height: 240px;
+            border-radius: 50%;
+            border: 1px dashed rgba(124,58,237,0.1);
+            animation: spin-ring 30s linear infinite reverse;
+        }
+        @keyframes spin-ring {
+            to { transform: rotate(360deg); }
+        }
+        .logo-section h2 {
+            font-size: 28px;
+            font-weight: 800;
+            margin-top: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .logo-section p {
+            color: var(--text-secondary);
+            font-size: 16px;
+            margin-top: 4px;
+        }
+
+        /* ===== PRODUCTS ===== */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .section-header h2 {
+            font-size: 22px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-header h2 i {
+            color: var(--primary);
+        }
+
+        .btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font);
+            text-decoration: none;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(79,172,254,0.3);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+        .btn-outline:hover {
+            background: rgba(255,255,255,0.05);
+            color: white;
+        }
+        .btn-outline-primary {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+        .btn-outline-primary:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .product-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 16px;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+        .product-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(79,172,254,0.2);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        .product-card .product-image {
+            width: 100%;
+            height: 200px;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            background: rgba(255,255,255,0.03);
+        }
+        .product-card .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+        .product-card:hover .product-image img {
+            transform: scale(1.05);
+        }
+        .product-card .product-name {
+            font-size: 16px;
+            font-weight: 700;
+            margin-top: 12px;
+            color: #fff;
+        }
+        .product-card .product-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            height: 40px;
+        }
+        .product-card .product-price {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .product-card .product-price .current {
+            font-size: 20px;
+            font-weight: 700;
+            color: #4FC3F7;
+        }
+        .product-card .product-price .old {
+            font-size: 14px;
+            color: var(--text-muted);
+            text-decoration: line-through;
+        }
+        .product-card .product-badge {
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+        .product-card .product-badge.discount {
+            background: rgba(234,67,53,0.15);
+            color: #ff6b6b;
+        }
+        .product-card .product-badge.new {
+            background: rgba(79,172,254,0.15);
+            color: var(--primary);
+        }
+        .product-card .product-badge.stock {
+            background: rgba(76,175,80,0.15);
+            color: #4CAF50;
+        }
+
+        /* ===== LOADING ===== */
+        .loading-spinner {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+        }
+        .loading-spinner i {
+            font-size: 32px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+        .empty-state i {
+            font-size: 48px;
+            color: rgba(255,255,255,0.05);
+            margin-bottom: 16px;
+            display: block;
+        }
+        .empty-state h3 {
+            color: rgba(255,255,255,0.3);
+            font-weight: 500;
+        }
+
+        /* ===== ALL PRODUCTS PAGE (hidden by default) ===== */
+        #allProductsSection {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+        #allProductsSection.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .container { padding: 12px; }
+            .slider-container { height: 280px; }
+            .slider-slide .slide-content h2 { font-size: 22px; }
+            .slider-slide .slide-content { padding: 20px; }
+            .logo-circle { width: 120px; height: 120px; }
+            .logo-circle .logo-img { width: 70px; height: 70px; }
+            .logo-circle .ring-1 { width: 150px; height: 150px; }
+            .logo-circle .ring-2 { width: 180px; height: 180px; }
+            .logo-section h2 { font-size: 22px; }
+            .products-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+            .app-header { padding: 10px 14px; }
+            .app-header .brand .brand-text h1 { font-size: 14px; }
+            .app-header .brand .brand-text span { display: none; }
+            .app-header .user-menu .user-badge { padding: 4px 10px 4px 4px; }
+            .app-header .user-menu .user-badge .user-info-text .device-id-small { display: none; }
+            .app-header .user-menu .btn-icon { width: 34px; height: 34px; font-size: 13px; }
+            .slider-btn { width: 32px; height: 32px; font-size: 14px; }
+        }
+        @media (max-width: 480px) {
+            .slider-container { height: 220px; }
+            .slider-slide .slide-content h2 { font-size: 18px; }
+            .slider-slide .slide-content p { font-size: 13px; }
+            .products-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+            .product-card .product-image { height: 140px; }
+            .product-card .product-name { font-size: 14px; }
+            .product-card .product-price .current { font-size: 16px; }
+            .logo-circle { width: 90px; height: 90px; }
+            .logo-circle .logo-img { width: 55px; height: 55px; }
+            .logo-circle .ring-1 { width: 120px; height: 120px; }
+            .logo-circle .ring-2 { width: 140px; height: 140px; }
+            .logo-section h2 { font-size: 18px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== HEADER ===== -->
+    <header class="app-header">
+        <a href="/" class="brand">
+            <div class="logo">
+                <img src="/ico.png" alt="GPS Tracker">
+            </div>
+            <div class="brand-text">
+                <h1>GPS Tracker</h1>
+                <span>فروشگاه</span>
+            </div>
+        </a>
+        <div class="user-menu">
+            <div class="user-badge" id="userBadge" style="display:none;">
+                <div class="avatar" id="userAvatar">U</div>
+                <div class="user-info-text">
+                    <span class="name" id="userNameDisplay">کاربر</span>
+                    <span class="device-id-small" id="deviceIdSmall">🆔 ---</span>
+                </div>
+            </div>
+            <a href="/index.html" class="btn-icon" title="نقشه"><i class="fas fa-map"></i></a>
+            <a href="/panel.html" class="btn-icon" title="پنل"><i class="fas fa-th-large"></i></a>
+            <button class="btn-icon danger" onclick="logoutUser()" title="خروج"><i class="fas fa-sign-out-alt"></i></button>
+        </div>
+    </header>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="container">
+
+        <!-- ===== SLIDER ===== -->
+        <div class="slider-container" id="sliderContainer">
+            <div class="slider-track" id="sliderTrack">
+                <!-- توسط JS پر می‌شود -->
+            </div>
+            <button class="slider-btn prev" onclick="prevSlide()"><i class="fas fa-chevron-right"></i></button>
+            <button class="slider-btn next" onclick="nextSlide()"><i class="fas fa-chevron-left"></i></button>
+            <div class="slider-dots" id="sliderDots"></div>
+        </div>
+
+        <!-- ===== LOGO SECTION ===== -->
+        <div class="logo-section">
+            <div class="logo-circle">
+                <div class="ring-1"></div>
+                <div class="ring-2"></div>
+                <div class="logo-img">
+                    <img src="/ico.png" alt="GPS Tracker">
+                </div>
+            </div>
+            <h2>GPS Tracker</h2>
+            <p>سیستم ردیابی هوشمند خودرو</p>
+        </div>
+
+        <!-- ===== LATEST PRODUCTS ===== -->
+        <div id="latestProductsSection">
+            <div class="section-header">
+                <h2><i class="fas fa-star"></i> جدیدترین محصولات</h2>
+                <button class="btn btn-outline-primary" onclick="showAllProducts()">
+                    <i class="fas fa-th-list"></i> مشاهده همه
+                </button>
+            </div>
+            <div class="products-grid" id="latestProductsGrid">
+                <div class="loading-spinner">
+                    <i class="fas fa-circle-notch fa-spin"></i>
+                    <p style="margin-top:12px;">در حال بارگذاری...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== ALL PRODUCTS ===== -->
+        <div id="allProductsSection">
+            <div class="section-header">
+                <h2><i class="fas fa-boxes"></i> همه محصولات</h2>
+                <button class="btn btn-outline-primary" onclick="showLatestProducts()">
+                    <i class="fas fa-arrow-right"></i> بازگشت به جدیدترین‌ها
+                </button>
+            </div>
+            <div class="products-grid" id="allProductsGrid">
+                <div class="loading-spinner">
+                    <i class="fas fa-circle-notch fa-spin"></i>
+                    <p style="margin-top:12px;">در حال بارگذاری...</p>
+                </div>
+            </div>
+            <div style="text-align:center;margin-top:20px;">
+                <button class="btn btn-primary" onclick="showLatestProducts()">
+                    <i class="fas fa-arrow-right"></i> بازگشت به جدیدترین‌ها
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="/loading.js"></script>
+    <script>
+        // فعال‌سازی لودینگ
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!window.location.href.includes('loading.html')) {
+                autoLoading();
+            }
+        });
+
+        // ============================================================
+        // STATE
+        // ============================================================
+        let shopId = null;
+        let allProducts = [];
+        let latestProducts = [];
+        let currentSlide = 0;
+        let slideInterval = null;
+        let slides = [];
+
+        // ============================================================
+        // USER SESSION
+        // ============================================================
+        async function checkUserSession() {
+            try {
+                const res = await fetch('/api/user-check');
+                const data = await res.json();
+                if (data.isLoggedIn) {
+                    document.getElementById('userBadge').style.display = 'flex';
+                    document.getElementById('userNameDisplay').textContent = data.userName || 'کاربر';
+                    document.getElementById('userAvatar').textContent = (data.userName || 'U').charAt(0).toUpperCase();
+                    document.getElementById('deviceIdSmall').textContent = '🆔 ' + data.deviceId;
+                }
+            } catch (e) {}
+        }
+
+        async function logoutUser() {
+            if (!confirm('آیا از خروج از سیستم مطمئن هستید؟')) return;
+            try {
+                await fetch('/api/user-logout', { method: 'POST' });
+                localStorage.clear();
+                window.location.href = '/login.html';
+            } catch (e) {
+                window.location.href = '/login.html';
+            }
+        }
+
+        // ============================================================
+        // LOAD SHOP
+        // ============================================================
+        async function loadShop() {
+            try {
+                const res = await fetch('/api/shop/main');
+                if (!res.ok) throw new Error('فروشگاه یافت نشد');
+                const data = await res.json();
+                shopId = data.id;
+                return data;
+            } catch (e) {
+                console.error('❌ خطا در دریافت فروشگاه:', e);
+                return null;
+            }
+        }
+
+        // ============================================================
+        // LOAD SLIDES
+        // ============================================================
+        async function loadSlides() {
+            if (!shopId) await loadShop();
+            if (!shopId) return;
+            try {
+                const res = await fetch('/api/shop/' + shopId + '/slides');
+                slides = await res.json();
+                renderSlider();
+            } catch (e) {
+                console.error('❌ خطا در دریافت اسلایدها:', e);
+                // اسلایدهای پیش‌فرض
+                slides = [
+                    { image_url: '/shop-uploads/default-slide-1.jpg', title: 'به فروشگاه GPS Tracker خوش آمدید', subtitle: 'بهترین محصولات ردیابی خودرو', link: '/shop' },
+                    { image_url: '/shop-uploads/default-slide-2.jpg', title: 'محصولات با کیفیت', subtitle: 'دستگاه‌های GPS با دقت بالا', link: '/shop' }
+                ];
+                renderSlider();
+            }
+        }
+
+        function renderSlider() {
+            const track = document.getElementById('sliderTrack');
+            const dots = document.getElementById('sliderDots');
+
+            if (!slides || slides.length === 0) {
+                track.innerHTML = `
+                    <div class="slider-slide" style="background:linear-gradient(135deg, rgba(79,172,254,0.1), rgba(124,58,237,0.1));">
+                        <div class="slide-content">
+                            <h2>به فروشگاه <span>GPS Tracker</span> خوش آمدید</h2>
+                            <p>بهترین محصولات ردیابی خودرو</p>
+                            <a href="/shop" class="btn btn-primary">مشاهده محصولات</a>
+                        </div>
+                    </div>
+                `;
+                dots.innerHTML = '';
+                return;
+            }
+
+            track.innerHTML = slides.map(slide => `
+                <div class="slider-slide" style="background-image: url('${slide.image_url}'); background-size: cover; background-position: center;">
+                    <div class="slide-content">
+                        <h2>${slide.title || 'محصولات GPS Tracker'}</h2>
+                        <p>${slide.subtitle || 'سیستم ردیابی هوشمند خودرو'}</p>
+                        <a href="${slide.link || '/shop'}" class="btn btn-primary">مشاهده محصولات</a>
+                    </div>
+                </div>
+            `).join('');
+
+            dots.innerHTML = slides.map((_, i) => `
+                <span class="dot ${i === 0 ? 'active' : ''}" onclick="goToSlide(${i})"></span>
+            `).join('');
+
+            currentSlide = 0;
+            updateSlider();
+            startAutoSlide();
+        }
+
+        function updateSlider() {
+            const track = document.getElementById('sliderTrack');
+            track.style.transform = `translateX(-${currentSlide * 100}%)`;
+            document.querySelectorAll('.slider-dots .dot').forEach((dot, i) => {
+                dot.classList.toggle('active', i === currentSlide);
+            });
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            updateSlider();
+            resetAutoSlide();
+        }
+
+        function nextSlide() {
+            if (!slides || slides.length === 0) return;
+            currentSlide = (currentSlide + 1) % slides.length;
+            updateSlider();
+            resetAutoSlide();
+        }
+
+        function prevSlide() {
+            if (!slides || slides.length === 0) return;
+            currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+            updateSlider();
+            resetAutoSlide();
+        }
+
+        function startAutoSlide() {
+            if (slideInterval) clearInterval(slideInterval);
+            if (!slides || slides.length <= 1) return;
+            slideInterval = setInterval(nextSlide, 5000);
+        }
+
+        function resetAutoSlide() {
+            if (slideInterval) {
+                clearInterval(slideInterval);
+                slideInterval = null;
+            }
+            startAutoSlide();
+        }
+
+        // ============================================================
+        // LOAD PRODUCTS
+        // ============================================================
+        async function loadProducts() {
+            if (!shopId) await loadShop();
+            if (!shopId) return;
+
+            try {
+                const res = await fetch('/api/shop/' + shopId + '/products');
+                allProducts = await res.json();
+
+                // ۱۰ محصول آخر
+                latestProducts = allProducts.slice(0, 10);
+
+                renderLatestProducts();
+                renderAllProducts();
+
+            } catch (e) {
+                console.error('❌ خطا در دریافت محصولات:', e);
+                document.getElementById('latestProductsGrid').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle" style="color:#ff6b6b;"></i>
+                        <h3>خطا در بارگذاری محصولات</h3>
+                        <p>${e.message}</p>
+                    </div>
+                `;
+                document.getElementById('allProductsGrid').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle" style="color:#ff6b6b;"></i>
+                        <h3>خطا در بارگذاری محصولات</h3>
+                        <p>${e.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderLatestProducts() {
+            const grid = document.getElementById('latestProductsGrid');
+            if (latestProducts.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column:1/-1;">
+                        <i class="fas fa-box-open"></i>
+                        <h3>هیچ محصولی موجود نیست</h3>
+                        <p>به زودی محصولات جدید اضافه می‌شوند</p>
+                    </div>
+                `;
+                return;
+            }
+            grid.innerHTML = latestProducts.map(p => productCardHTML(p)).join('');
+        }
+
+        function renderAllProducts() {
+            const grid = document.getElementById('allProductsGrid');
+            if (allProducts.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column:1/-1;">
+                        <i class="fas fa-box-open"></i>
+                        <h3>هیچ محصولی موجود نیست</h3>
+                        <p>به زودی محصولات جدید اضافه می‌شوند</p>
+                    </div>
+                `;
+                return;
+            }
+            grid.innerHTML = allProducts.map(p => productCardHTML(p)).join('');
+        }
+
+        function productCardHTML(product) {
+            const hasDiscount = product.discount_price > 0 && product.discount_price < product.price;
+            const discountPercent = hasDiscount ? Math.round((1 - product.discount_price / product.price) * 100) : 0;
+            const isNew = new Date(product.created_at) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+
+            let badges = '';
+            if (hasDiscount) badges += `<span class="product-badge discount">🔥 ${discountPercent}% تخفیف</span>`;
+            if (isNew) badges += `<span class="product-badge new">🆕 جدید</span>`;
+            if (product.stock > 0) badges += `<span class="product-badge stock">✅ موجود</span>`;
+
+            return `
+                <a href="/product/${product.slug}" class="product-card">
+                    <div class="product-image">
+                        <img src="${product.cover_image}" alt="${product.name}" loading="lazy">
+                    </div>
+                    <div class="product-name">${product.name}</div>
+                    <div class="product-desc">${product.description ? product.description.substring(0, 60) + '...' : ''}</div>
+                    <div class="product-price">
+                        <span class="current">${product.price.toLocaleString('fa-IR')} تومان</span>
+                        ${hasDiscount ? `<span class="old">${product.discount_price.toLocaleString('fa-IR')}</span>` : ''}
+                    </div>
+                    <div>${badges}</div>
+                </a>
+            `;
+        }
+
+        // ============================================================
+        // SHOW / HIDE SECTIONS
+        // ============================================================
+        function showAllProducts() {
+            document.getElementById('latestProductsSection').style.display = 'none';
+            document.getElementById('allProductsSection').classList.add('active');
+            document.getElementById('allProductsSection').style.display = 'block';
+            window.scrollTo({ top: document.getElementById('allProductsSection').offsetTop - 80, behavior: 'smooth' });
+        }
+
+        function showLatestProducts() {
+            document.getElementById('allProductsSection').classList.remove('active');
+            document.getElementById('allProductsSection').style.display = 'none';
+            document.getElementById('latestProductsSection').style.display = 'block';
+            window.scrollTo({ top: document.getElementById('latestProductsSection').offsetTop - 80, behavior: 'smooth' });
+        }
+
+        // ============================================================
+        // INIT
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', async function() {
+            await checkUserSession();
+            await loadShop();
+            await loadSlides();
+            await loadProducts();
+
+            // نمایش بخش جدیدترین‌ها
+            document.getElementById('latestProductsSection').style.display = 'block';
+            document.getElementById('allProductsSection').style.display = 'none';
+
+            // اگر اسلاید وجود ندارد، اسلایدر را مخفی نکن
+            if (!slides || slides.length === 0) {
+                document.getElementById('sliderContainer').style.display = 'none';
+            }
+        });
+    </script>
+
+</body>
+</html>

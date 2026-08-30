@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>سیستم ردیابی GPS | رهیاب هوشمند خودرو</title>
+    <link rel="icon" href="/ico.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <style>
+        /* ===== RESET & VARIABLES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        :root {
+            --primary: #4facfe;
+            --primary-dark: #3b82f6;
+            --secondary: #7c3aed;
+            --accent: #00f2fe;
+            --bg: #0c0e1a;
+            --bg-card: rgba(255, 255, 255, 0.03);
+            --text: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.6);
+            --text-muted: rgba(255, 255, 255, 0.25);
+            --border: rgba(255, 255, 255, 0.06);
+            --shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+            --radius: 20px;
+            --radius-sm: 12px;
+            --transition: all 0.25s ease;
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text);
+            direction: rtl;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+        }
+        a {
+            text-decoration: none;
+            color: var(--primary);
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            background: rgba(12, 14, 26, 0.92);
+            border-bottom: 1px solid var(--border);
+            padding: 14px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(20px);
+        }
+        .header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+        .brand .logo {
+            width: 42px;
+            height: 42px;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .brand .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .brand h1 {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: #fff;
+        }
+        .brand h1 span {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .brand small {
+            display: block;
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 400;
+            margin-top: -2px;
+        }
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 22px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: var(--font);
+            background: transparent;
+            color: var(--text-secondary);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #fff;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(79, 172, 254, 0.3);
+        }
+        .btn-outline {
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: #fff;
+            background: rgba(79, 172, 254, 0.05);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: #fff;
+        }
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(245, 87, 108, 0.3);
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 6px 14px 6px 6px;
+            border-radius: 30px;
+            border: 1px solid var(--border);
+        }
+        .user-badge .avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        .user-badge .name {
+            font-weight: 600;
+            font-size: 14px;
+            color: #fff;
+        }
+        .user-badge .logout-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 14px;
+            transition: var(--transition);
+            padding: 4px 8px;
+        }
+        .user-badge .logout-btn:hover {
+            color: #ff6b6b;
+        }
+
+        /* ===== HERO ===== */
+        .hero {
+            text-align: center;
+            padding: 60px 0 40px;
+        }
+        .hero .logo-big {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 18px;
+            border-radius: 24px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            box-shadow: 0 8px 40px rgba(79, 172, 254, 0.15);
+        }
+        .hero .logo-big img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .hero h1 {
+            font-size: 40px;
+            font-weight: 900;
+            letter-spacing: -1px;
+            line-height: 1.2;
+            color: #fff;
+        }
+        .hero h1 .highlight {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero p {
+            font-size: 18px;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 12px auto 0;
+            line-height: 1.8;
+        }
+        .hero .divider {
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 4px;
+            margin: 20px auto;
+        }
+        .hero .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin-top: 28px;
+        }
+        .hero .buttons .btn {
+            padding: 14px 34px;
+            font-size: 16px;
+        }
+        .no-device-msg {
+            color: #fcc419;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+        .no-device-msg i {
+            margin-left: 6px;
+        }
+
+        /* ===== STATS ===== */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 16px;
+            max-width: 800px;
+            margin: 0 auto 40px;
+        }
+        .stat-item {
+            background: var(--bg-card);
+            border-radius: var(--radius-sm);
+            padding: 20px;
+            text-align: center;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+        }
+        .stat-item:hover {
+            transform: translateY(-4px);
+            border-color: rgba(79, 172, 254, 0.2);
+        }
+        .stat-item .number {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .stat-item .label {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* ===== FEATURES ===== */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin: 20px 0 40px;
+        }
+        .feature-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 28px 24px;
+            border: 1px solid var(--border);
+            text-align: center;
+            transition: var(--transition);
+        }
+        .feature-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(79, 172, 254, 0.2);
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+        }
+        .feature-card .icon {
+            font-size: 36px;
+            display: block;
+            margin-bottom: 12px;
+        }
+        .feature-card h3 {
+            font-size: 17px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            text-align: center;
+            padding: 30px 0 20px;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+        .footer .social {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 10px;
+        }
+        .footer .social a {
+            color: var(--text-muted);
+            font-size: 20px;
+            transition: var(--transition);
+        }
+        .footer .social a:hover {
+            color: var(--primary);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .header .container {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+            .header-actions {
+                justify-content: center;
+            }
+            .hero h1 {
+                font-size: 28px;
+            }
+            .hero p {
+                font-size: 16px;
+            }
+            .hero .buttons .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            .stats {
+                grid-template-columns: 1fr 1fr;
+            }
+            .features {
+                grid-template-columns: 1fr 1fr;
+            }
+            .brand h1 {
+                font-size: 17px;
+            }
+        }
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 22px;
+            }
+            .hero .logo-big {
+                width: 70px;
+                height: 70px;
+            }
+            .stats {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+            .stat-item .number {
+                font-size: 20px;
+            }
+            .features {
+                grid-template-columns: 1fr;
+            }
+            .header-actions .btn {
+                padding: 8px 14px;
+                font-size: 12px;
+            }
+            .user-badge .name {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<script src="/loading.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (!window.location.href.includes('loading.html')) {
+            autoLoading();
+        }
+    });
+</script>
+<body>
+
+    <!-- ===== HEADER ===== -->
+    <header class="header">
+        <div class="container">
+            <a href="/" class="brand" aria-label="GPS Tracker">
+                <span class="logo">
+                    <img src="/ico.png" alt="GPS Tracker">
+                </span>
+                <div>
+                    <h1>GPS <span>Tracker</span></h1>
+                    <small>سیستم ردیابی هوشمند</small>
+                </div>
+            </a>
+            <div class="header-actions" id="userStatus">
+                <!-- توسط JS پر می‌شود -->
+            </div>
+        </div>
+    </header>
+
+    <!-- ===== HERO ===== -->
+    <section class="hero">
+        <div class="container">
+            <div class="logo-big">
+                <img src="/ico.png" alt="GPS Tracker">
+            </div>
+            <h1>به <span class="highlight">GPS Tracker</span> خوش آمدید</h1>
+            <p>سیستم ردیابی لحظه‌ای خودرو با قابلیت‌های پیشرفته برای مدیریت ناوگان، امنیت خودرو و کنترل کامل بر روی خودروی خود</p>
+            <div class="divider"></div>
+            <div class="buttons">
+                <a href="/shop.html" class="btn btn-success">
+                    <i class="fas fa-shopping-cart"></i> فروشگاه
+                </a>
+                <button class="btn btn-primary" id="panelBtn" onclick="goToPanel()">
+                    <i class="fas fa-th-large"></i> ورود به پنل
+                </button>
+            </div>
+            <div class="no-device-msg" id="noDeviceMsg">
+                <i class="fas fa-exclamation-circle"></i>
+                لطفاً ابتدا یک دستگاه خریداری و فعال‌سازی کنید
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== STATS ===== -->
+    <div class="container">
+        <div class="stats">
+            <div class="stat-item">
+                <div class="number" id="statUsers">+۰</div>
+                <div class="label">کاربران فعال</div>
+            </div>
+            <div class="stat-item">
+                <div class="number" id="statDevices">+۰</div>
+                <div class="label">دستگاه‌های متصل</div>
+            </div>
+            <div class="stat-item">
+                <div class="number" id="statTrips">+۰</div>
+                <div class="label">سفر ثبت شده</div>
+            </div>
+            <div class="stat-item">
+                <div class="number" id="statDistance">+۰</div>
+                <div class="label">کیلومتر پیموده شده</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== FEATURES ===== -->
+    <div class="container">
+        <div class="features">
+            <div class="feature-card">
+                <span class="icon">📡</span>
+                <h3>ردیابی لحظه‌ای</h3>
+                <p>موقعیت دقیق خودرو را در هر لحظه مشاهده کنید</p>
+            </div>
+            <div class="feature-card">
+                <span class="icon">🛡️</span>
+                <h3>محدوده جغرافیایی</h3>
+                <p>با تعیین محدوده، از خروج خودرو مطلع شوید</p>
+            </div>
+            <div class="feature-card">
+                <span class="icon">📊</span>
+                <h3>گزارش سفر</h3>
+                <p>مسافت، سرعت و توقف‌های خودرو را بررسی کنید</p>
+            </div>
+            <div class="feature-card">
+                <span class="icon">🔗</span>
+                <h3>اشتراک موقعیت</h3>
+                <p>لینک موقت موقعیت خودرو را با دیگران به اشتراک بگذارید</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+        <div class="container">
+            <div class="social">
+                <a href="#" aria-label="Telegram"><i class="fab fa-telegram"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+            </div>
+            <p>© 2024 <a href="/">GPS Tracker</a> — تمامی حقوق محفوظ است</p>
+        </div>
+    </footer>
+
+    <script>
+        // ============================================================
+        // STATE
+        // ============================================================
+        let isLoggedIn = false;
+        let userName = '';
+        let deviceCount = 0;
+
+        // ============================================================
+        // CHECK USER SESSION
+        // ============================================================
+        async function checkSession() {
+            try {
+                const response = await fetch('/api/user-check', {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+                const result = await response.json();
+
+                if (result.isLoggedIn) {
+                    isLoggedIn = true;
+                    userName = result.userName || 'کاربر';
+                    deviceCount = 0;
+
+                    const devicesRes = await fetch('/api/my-devices', {
+                        credentials: 'include'
+                    });
+                    if (devicesRes.ok) {
+                        const devices = await devicesRes.json();
+                        deviceCount = devices.length;
+                    }
+                }
+                updateUI();
+                updateStats();
+            } catch (e) {
+                console.error('خطا در بررسی سشن:', e);
+                updateUI();
+            }
+        }
+
+        // ============================================================
+        // UPDATE UI
+        // ============================================================
+        function updateUI() {
+            const statusEl = document.getElementById('userStatus');
+            const panelBtn = document.getElementById('panelBtn');
+            const noDeviceMsg = document.getElementById('noDeviceMsg');
+
+            if (isLoggedIn && userName) {
+                statusEl.innerHTML = `
+                    <div class="user-badge">
+                        <span class="avatar">${userName.charAt(0).toUpperCase()}</span>
+                        <span class="name">${userName} عزیز</span>
+                        <button class="logout-btn" onclick="logoutUser()" aria-label="خروج">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                `;
+            } else {
+                statusEl.innerHTML = `
+                    <a href="/login.html" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt"></i> ورود / ثبت‌نام
+                    </a>
+                `;
+            }
+
+            if (isLoggedIn) {
+                if (deviceCount > 0) {
+                    panelBtn.disabled = false;
+                    panelBtn.style.opacity = '1';
+                    panelBtn.style.cursor = 'pointer';
+                    noDeviceMsg.style.display = 'none';
+                    panelBtn.innerHTML = '<i class="fas fa-th-large"></i> ورود به پنل';
+                    panelBtn.onclick = function() {
+                        window.location.href = '/panel.html';
+                    };
+                } else {
+                    panelBtn.disabled = true;
+                    panelBtn.style.opacity = '0.5';
+                    panelBtn.style.cursor = 'not-allowed';
+                    noDeviceMsg.style.display = 'block';
+                }
+            } else {
+                panelBtn.disabled = false;
+                panelBtn.style.opacity = '1';
+                panelBtn.style.cursor = 'pointer';
+                noDeviceMsg.style.display = 'none';
+                panelBtn.innerHTML = '<i class="fas fa-th-large"></i> ورود به پنل';
+                panelBtn.onclick = function() {
+                    window.location.href = '/login.html';
+                };
+            }
+        }
+
+        // ============================================================
+        // GO TO PANEL
+        // ============================================================
+        function goToPanel() {
+            if (isLoggedIn && deviceCount > 0) {
+                window.location.href = '/panel.html';
+            } else if (isLoggedIn && deviceCount === 0) {
+                // توسط noDeviceMsg هندل می‌شود
+            } else {
+                window.location.href = '/login.html';
+            }
+        }
+
+        // ============================================================
+        // LOGOUT
+        // ============================================================
+        async function logoutUser() {
+            if (!confirm('آیا از خروج از سیستم مطمئن هستید؟')) return;
+            try {
+                await fetch('/api/user-logout', { method: 'POST', credentials: 'include' });
+                localStorage.clear();
+                window.location.href = '/';
+            } catch (e) {
+                window.location.href = '/';
+            }
+        }
+
+        // ============================================================
+        // UPDATE STATS
+        // ============================================================
+        async function updateStats() {
+            try {
+                const response = await fetch('/api/stats', {
+                    credentials: 'include'
+                });
+                if (response.ok) {
+                    const stats = await response.json();
+                    document.getElementById('statUsers').textContent = '+ ' + (stats.users || 0).toLocaleString('fa-IR');
+                    document.getElementById('statDevices').textContent = '+ ' + (stats.devices || 0).toLocaleString('fa-IR');
+                    document.getElementById('statTrips').textContent = '+ ' + (stats.trips || 0).toLocaleString('fa-IR');
+                    document.getElementById('statDistance').textContent = '+ ' + (stats.distance || 0).toLocaleString('fa-IR') +
+                        ' km';
+                }
+            } catch (e) {
+                document.getElementById('statUsers').textContent = '+ ۰';
+                document.getElementById('statDevices').textContent = '+ ۰';
+                document.getElementById('statTrips').textContent = '+ ۰';
+                document.getElementById('statDistance').textContent = '+ ۰ km';
+            }
+        }
+
+        // ============================================================
+        // START
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', checkSession);
+    </script>
+
+</body>
+</html>

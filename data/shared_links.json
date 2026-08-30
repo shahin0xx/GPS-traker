@@ -1,0 +1,50 @@
+{
+  "links": [
+    {
+      "token": "0c160ec4976ebca2c0c6c69284197d41",
+      "deviceId": "GK:7x9Pq2Rn",
+      "createdAt": 1785954173420,
+      "expiresAt": 1785954473420,
+      "isActive": true
+    },
+    {
+      "token": "3d0b6c45bc22f3733cbec3ef55795e4d",
+      "deviceId": "GK:7x9Pq2Rn",
+      "createdAt": 1785956695161,
+      "expiresAt": 1785956995161,
+      "isActive": true
+    },
+    {
+      "token": "6edb9dfedefc419a1cb7849ca0c26259",
+      "deviceId": "GK:7x9Pq2Rn",
+      "createdAt": 1785957976786,
+      "expiresAt": 1785958276786,
+      "isActive": false,
+      "views": 0
+    },
+    {
+      "token": "26abf01bfeb2b7df82d098f31bba8c7a",
+      "deviceId": "GK:7x9Pq2Rn",
+      "createdAt": 1785958004739,
+      "expiresAt": 1785958304739,
+      "isActive": true,
+      "views": 1
+    },
+    {
+      "token": "dcf3e4ee7011261820554e2d4d39907c",
+      "deviceId": "GK:7x9Pq2Rn",
+      "createdAt": 1785958989592,
+      "expiresAt": 1785959289592,
+      "isActive": true,
+      "views": 14
+    },
+    {
+      "token": "eaea7481a691e796ff5b694c44f680b5",
+      "deviceId": "GK:7x9Pq2Rn",
+      "createdAt": 1786003570186,
+      "expiresAt": 1786003870186,
+      "isActive": false,
+      "views": 4
+    }
+  ]
+}

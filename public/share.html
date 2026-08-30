@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>مشاهده موقعیت | GPS Tracker</title>
+    <link rel="icon" href="/ico.png" type="image/png">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0c0e1a;
+            color: white;
+            direction: rtl;
+            overflow: hidden;
+            height: 100vh;
+        }
+        #map {
+            height: 100vh;
+            width: 100%;
+        }
+        .share-header {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(16px);
+            padding: 16px 24px;
+            border-radius: 16px;
+            z-index: 1000;
+            border: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .share-header .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .share-header .brand .logo {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            background: rgba(255,255,255,0.05);
+        }
+        .share-header .brand .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .share-header .brand .brand-text {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .share-header .brand .brand-text small {
+            display: block;
+            font-size: 10px;
+            color: rgba(255,255,255,0.3);
+            font-weight: 400;
+        }
+        .share-header .title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .share-header .title .status {
+            font-size: 12px;
+            color: #4CAF50;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .share-header .title .status .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4CAF50;
+            animation: pulse-dot 1s infinite;
+        }
+        @keyframes pulse-dot {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.7); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        .share-header .info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .share-header .info .time {
+            font-size: 13px;
+            color: #FFC107;
+            background: rgba(255,193,7,0.1);
+            padding: 4px 14px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,193,7,0.15);
+            font-family: monospace;
+            direction: ltr;
+            min-width: 120px;
+            text-align: center;
+        }
+        .share-header .info .time.expired {
+            color: #FF6B6B;
+            background: rgba(234,67,53,0.15);
+            border-color: rgba(234,67,53,0.2);
+        }
+        .share-header .info .coords {
+            font-size: 12px;
+            color: rgba(255,255,255,0.4);
+            direction: ltr;
+        }
+        .share-footer {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(10px);
+            padding: 10px 24px;
+            border-radius: 30px;
+            z-index: 1000;
+            font-size: 12px;
+            color: rgba(255,255,255,0.3);
+            border: 1px solid rgba(255,255,255,0.05);
+            text-align: center;
+        }
+        .share-footer i {
+            color: #4FC3F7;
+        }
+        .error-box {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.9);
+            padding: 40px 50px;
+            border-radius: 20px;
+            z-index: 2000;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.05);
+            max-width: 90%;
+        }
+        .error-box i {
+            font-size: 48px;
+            color: #FF6B6B;
+            margin-bottom: 15px;
+        }
+        .error-box h2 {
+            color: #FF6B6B;
+            margin-bottom: 8px;
+        }
+        .error-box p {
+            color: rgba(255,255,255,0.4);
+            font-size: 14px;
+        }
+        .loading-box {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2000;
+            text-align: center;
+        }
+        .loading-box .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(255,255,255,0.05);
+            border-top-color: #4FC3F7;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 15px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .loading-box p {
+            color: rgba(255,255,255,0.4);
+            font-size: 14px;
+        }
+        .expired-box {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.9);
+            padding: 40px 50px;
+            border-radius: 20px;
+            z-index: 2000;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.05);
+            max-width: 90%;
+        }
+        .expired-box i {
+            font-size: 48px;
+            color: #FFC107;
+            margin-bottom: 15px;
+        }
+        .expired-box h2 {
+            color: #FFC107;
+            margin-bottom: 8px;
+        }
+        .expired-box p {
+            color: rgba(255,255,255,0.4);
+            font-size: 14px;
+        }
+        .retry-btn {
+            margin-top: 16px;
+            padding: 10px 30px;
+            background: linear-gradient(135deg, #4facfe, #7c3aed);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .retry-btn:hover {
+            transform: scale(1.05);
+        }
+        @media (max-width: 768px) {
+            .share-header {
+                top: 12px;
+                right: 12px;
+                left: 12px;
+                padding: 12px 16px;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+            .share-header .brand .brand-text { font-size: 14px; }
+            .share-header .info .coords { font-size: 10px; }
+            .share-header .info .time { font-size: 11px; padding: 2px 10px; min-width: 80px; }
+            .share-footer { font-size: 10px; padding: 8px 16px; bottom: 15px; }
+        }
+        @media (max-width: 480px) {
+            .share-header .info .coords { display: none; }
+            .share-header .brand .logo { width: 28px; height: 28px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Loading -->
+    <div class="loading-box" id="loadingBox">
+        <div class="spinner"></div>
+        <p>در حال دریافت موقعیت...</p>
+    </div>
+
+    <!-- Error -->
+    <div class="error-box" id="errorBox" style="display:none;">
+        <i class="fas fa-exclamation-triangle"></i>
+        <h2 id="errorTitle">خطا</h2>
+        <p id="errorMessage">خطا در ارتباط با سرور</p>
+        <button class="retry-btn" onclick="retryLoad()"><i class="fas fa-sync-alt"></i> تلاش مجدد</button>
+    </div>
+
+    <!-- Expired -->
+    <div class="expired-box" id="expiredBox" style="display:none;">
+        <i class="fas fa-clock"></i>
+        <h2>⏰ لینک منقضی شده</h2>
+        <p>این لینک قبلاً منقضی شده است و دیگر قابل استفاده نیست</p>
+        <p style="font-size:12px;color:rgba(255,255,255,0.2);margin-top:8px;">برای دریافت موقعیت لحظه‌ای، لطفاً با صاحب دستگاه تماس بگیرید</p>
+    </div>
+
+    <!-- Map -->
+    <div id="map"></div>
+
+    <!-- Header -->
+    <div class="share-header" id="shareHeader" style="display:none;">
+        <div class="brand">
+            <div class="logo">
+                <img src="/ico.png" alt="GPS Tracker">
+            </div>
+            <div class="brand-text">
+                GPS Tracker
+                <small>اشتراک موقعیت</small>
+            </div>
+        </div>
+        <div class="title">
+            <div class="status">
+                <span class="dot"></span>
+                <span>لایو</span>
+            </div>
+        </div>
+        <div class="info">
+            <span class="coords" id="coordsDisplay">عرض: --- | طول: ---</span>
+            <span class="time" id="timeDisplay">⏱️ 00:30:00</span>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="share-footer" id="shareFooter" style="display:none;">
+        <i class="fas fa-lock"></i> این لینک به صورت موقت و امن ایجاد شده است
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        // ============================================================
+        // GET TOKEN FROM URL
+        // ============================================================
+        const token = window.location.pathname.split('/').pop();
+        let map = null;
+        let marker = null;
+        let accuracyCircle = null;
+        let deviceId = null;
+        let timerInterval = null;
+        let socket = null;
+        let isExpired = false;
+        let totalSeconds = 0;
+        let expiresAt = null;
+        let retryCount = 0;
+        const MAX_RETRY = 3;
+
+        // ============================================================
+        // INIT MAP
+        // ============================================================
+        function initMap(lat, lng) {
+            if (map) return;
+            
+            map = L.map('map', {
+                center: [lat, lng],
+                zoom: 17,
+                zoomControl: true
+            });
+
+            L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+                subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+                maxZoom: 20
+            }).addTo(map);
+
+            marker = L.marker([lat, lng]).addTo(map);
+            marker.bindPopup('📍 موقعیت فعلی');
+
+            accuracyCircle = L.circle([lat, lng], {
+                color: '#4FC3F7',
+                fillColor: '#4FC3F7',
+                fillOpacity: 0.15,
+                weight: 2,
+                opacity: 0.6,
+                radius: 15
+            }).addTo(map);
+
+            document.getElementById('coordsDisplay').textContent = 
+                'عرض: ' + lat.toFixed(6) + ' | طول: ' + lng.toFixed(6);
+        }
+
+        // ============================================================
+        // UPDATE LOCATION
+        // ============================================================
+        function updateLocation(lat, lng) {
+            const latlng = [lat, lng];
+            
+            if (marker) {
+                marker.setLatLng(latlng);
+            }
+            
+            if (accuracyCircle) {
+                accuracyCircle.setLatLng(latlng);
+            }
+            
+            map.panTo(latlng);
+            
+            document.getElementById('coordsDisplay').textContent = 
+                'عرض: ' + lat.toFixed(6) + ' | طول: ' + lng.toFixed(6);
+        }
+
+        // ============================================================
+        // UPDATE TIMER
+        // ============================================================
+        function updateTimer() {
+            if (!expiresAt) return;
+            
+            const now = Date.now();
+            const remaining = Math.max(0, (expiresAt - now) / 1000);
+            totalSeconds = Math.floor(remaining);
+            
+            if (totalSeconds <= 0) {
+                document.getElementById('timeDisplay').textContent = '⏱️ منقضی شده';
+                document.getElementById('timeDisplay').className = 'time expired';
+                isExpired = true;
+                showExpired();
+                return;
+            }
+            
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+            
+            const hh = String(hours).padStart(2, '0');
+            const mm = String(minutes).padStart(2, '0');
+            const ss = String(seconds).padStart(2, '0');
+            
+            let timeStr = '';
+            if (hours > 0) {
+                timeStr = hh + ':' + mm + ':' + ss;
+            } else {
+                timeStr = mm + ':' + ss;
+            }
+            
+            document.getElementById('timeDisplay').textContent = '⏱️ ' + timeStr;
+            
+            if (totalSeconds < 60) {
+                document.getElementById('timeDisplay').style.color = '#FF6B6B';
+            } else if (totalSeconds < 300) {
+                document.getElementById('timeDisplay').style.color = '#FFC107';
+            } else {
+                document.getElementById('timeDisplay').style.color = '#4CAF50';
+            }
+        }
+
+        // ============================================================
+        // SHOW EXPIRED
+        // ============================================================
+        function showExpired() {
+            document.getElementById('loadingBox').style.display = 'none';
+            document.getElementById('shareHeader').style.display = 'none';
+            document.getElementById('shareFooter').style.display = 'none';
+            document.getElementById('expiredBox').style.display = 'block';
+            
+            if (socket) {
+                socket.disconnect();
+            }
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+        }
+
+        // ============================================================
+        // SHOW ERROR
+        // ============================================================
+        function showError(message) {
+            document.getElementById('loadingBox').style.display = 'none';
+            document.getElementById('errorBox').style.display = 'block';
+            document.getElementById('errorMessage').textContent = message || 'خطا در ارتباط با سرور';
+        }
+
+        // ============================================================
+        // RETRY
+        // ============================================================
+        function retryLoad() {
+            retryCount++;
+            document.getElementById('errorBox').style.display = 'none';
+            document.getElementById('loadingBox').style.display = 'block';
+            fetchSharedLocation();
+        }
+
+        // ============================================================
+        // FETCH SHARED LOCATION
+        // ============================================================
+        async function fetchSharedLocation() {
+            try {
+                const response = await fetch('/api/share-location/' + token);
+                
+                if (!response.ok) {
+                    if (response.status === 410) {
+                        showExpired();
+                        return;
+                    }
+                    if (response.status === 404) {
+                        showError('لینک نامعتبر است');
+                        return;
+                    }
+                    throw new Error('خطا در دریافت اطلاعات');
+                }
+                
+                const result = await response.json();
+                
+                if (!result.latitude || !result.longitude) {
+                    throw new Error('موقعیتی برای نمایش وجود ندارد');
+                }
+                
+                deviceId = result.deviceId;
+                expiresAt = result.expiresAt;
+                
+                document.getElementById('loadingBox').style.display = 'none';
+                document.getElementById('shareHeader').style.display = 'flex';
+                document.getElementById('shareFooter').style.display = 'block';
+                
+                initMap(result.latitude, result.longitude);
+                updateLocation(result.latitude, result.longitude);
+                
+                updateTimer();
+                
+                if (timerInterval) clearInterval(timerInterval);
+                timerInterval = setInterval(() => {
+                    updateTimer();
+                    if (isExpired) {
+                        clearInterval(timerInterval);
+                    }
+                }, 1000);
+                
+                if (socket) {
+                    socket.disconnect();
+                }
+                socket = io();
+                socket.on(`location_${deviceId}`, (data) => {
+                    if (!isExpired && data.latitude && data.longitude) {
+                        updateLocation(data.latitude, data.longitude);
+                    }
+                });
+                
+                socket.on('connect_error', () => {
+                    console.log('⚠️ خطا در اتصال سوکت');
+                });
+                
+            } catch (error) {
+                console.error('❌ Error:', error);
+                if (retryCount < MAX_RETRY) {
+                    setTimeout(() => {
+                        retryLoad();
+                    }, 2000);
+                } else {
+                    showError('خطا در ارتباط با سرور');
+                }
+            }
+        }
+
+        // ============================================================
+        // START
+        // ============================================================
+        if (!token) {
+            showError('لینک نامعتبر است');
+        } else {
+            fetchSharedLocation();
+        }
+
+        console.log('🔄 صفحه اشتراک موقعیت آماده است | Token:', token);
+    </script>
+
+</body>
+</html>

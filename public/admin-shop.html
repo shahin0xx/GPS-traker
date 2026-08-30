@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مدیریت فروشگاه | GPS Tracker</title>
+    <link rel="icon" href="/ico.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0c0e1a;
+            color: #e0e0e0;
+            direction: rtl;
+            min-height: 100vh;
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0c0e1a; }
+        ::-webkit-scrollbar-thumb { background: #4facfe; border-radius: 10px; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .page-header h1 { font-size: 24px; color: #fff; display: flex; align-items: center; gap: 12px; }
+        .page-header h1 i { color: #4facfe; }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: inherit;
+            text-decoration: none;
+        }
+        .btn-primary { background: linear-gradient(135deg, #4facfe, #7c3aed); color: white; }
+        .btn-primary:hover { transform: scale(1.02); }
+        .btn-success { background: #34a853; color: white; }
+        .btn-success:hover { transform: scale(1.02); }
+        .btn-danger { background: #e74c3c; color: white; }
+        .btn-danger:hover { transform: scale(1.02); }
+        .btn-warning { background: #f9ab00; color: white; }
+        .btn-warning:hover { transform: scale(1.02); }
+        .btn-outline { background: transparent; border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.5); }
+        .btn-outline:hover { background: rgba(255,255,255,0.05); color: white; }
+        .btn-sm { padding: 6px 14px; font-size: 12px; }
+
+        .tabs {
+            display: flex;
+            gap: 4px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+        .tabs .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            color: rgba(255,255,255,0.4);
+            transition: all 0.3s;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .tabs .tab:hover { color: white; }
+        .tabs .tab.active { color: #4facfe; border-bottom-color: #4facfe; }
+
+        .tab-content { display: none; animation: fadeIn 0.3s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card {
+            background: rgba(255,255,255,0.03);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid rgba(255,255,255,0.06);
+            margin-bottom: 20px;
+        }
+        .card .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .card .card-header h2 { font-size: 18px; color: #fff; display: flex; align-items: center; gap: 10px; }
+        .card .card-header h2 i { color: #4facfe; }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-weight: 600; color: rgba(255,255,255,0.6); margin-bottom: 4px; font-size: 13px; }
+        .form-group label .required { color: #e74c3c; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            background: rgba(255,255,255,0.04);
+            border: 2px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: #4facfe;
+            outline: none;
+            background: rgba(255,255,255,0.06);
+        }
+        .form-group textarea { min-height: 80px; resize: vertical; }
+        .form-group .hint { font-size: 12px; color: rgba(255,255,255,0.2); margin-top: 4px; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        table th {
+            text-align: right;
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.03);
+            color: rgba(255,255,255,0.4);
+            font-weight: 600;
+            border-bottom: 2px solid rgba(255,255,255,0.05);
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+        table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            color: rgba(255,255,255,0.7);
+        }
+        table tr:hover td { background: rgba(255,255,255,0.02); }
+        .table-responsive { overflow-x: auto; }
+
+        .status-badge {
+            padding: 3px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .status-badge.active { background: rgba(52,168,83,0.15); color: #34a853; }
+        .status-badge.inactive { background: rgba(231,76,60,0.15); color: #e74c3c; }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(255,255,255,0.15);
+        }
+        .empty-state i { font-size: 40px; display: block; margin-bottom: 12px; }
+
+        .table-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+        .table-actions .btn-icon {
+            width: 32px; height: 32px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            background: rgba(255,255,255,0.04);
+            color: rgba(255,255,255,0.3);
+        }
+        .table-actions .btn-icon:hover { background: rgba(255,255,255,0.08); color: #fff; }
+        .table-actions .btn-icon.edit { color: #f9ab00; }
+        .table-actions .btn-icon.edit:hover { background: rgba(249,171,0,0.15); }
+        .table-actions .btn-icon.delete { color: #e74c3c; }
+        .table-actions .btn-icon.delete:hover { background: rgba(231,76,60,0.15); }
+
+        .message {
+            padding: 12px 18px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            display: none;
+            font-size: 14px;
+            align-items: center;
+            gap: 10px;
+        }
+        .message.success { display: flex; background: rgba(52,168,83,0.12); color: #34a853; border: 1px solid rgba(52,168,83,0.15); }
+        .message.error { display: flex; background: rgba(231,76,60,0.12); color: #e74c3c; border: 1px solid rgba(231,76,60,0.15); }
+        .message.info { display: flex; background: rgba(79,172,254,0.12); color: #4facfe; border: 1px solid rgba(79,172,254,0.15); }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(8px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-box {
+            background: #1a1f3a;
+            border-radius: 20px;
+            padding: 35px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .modal-box h3 { font-size: 20px; color: #fff; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .modal-box .modal-actions { display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
+        .modal-box .modal-actions .btn { flex: 1; justify-content: center; min-width: 80px; }
+
+        .spec-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .spec-row input { flex: 1; }
+        .spec-row .btn-danger { flex: none; padding: 6px 12px; }
+
+        @media (max-width: 768px) {
+            .container { padding: 12px; }
+            .form-grid { grid-template-columns: 1fr; }
+            .modal-box { padding: 20px; }
+            .tabs .tab { padding: 8px 12px; font-size: 12px; }
+        }
+    </style>
+</head>
+<script src="/loading.js"></script>
+<script>document.addEventListener('DOMContentLoaded',function(){if(!window.location.href.includes('loading.html')){autoLoading();}});</script>
+<body>
+    <div class="container">
+        <div class="page-header">
+            <h1><i class="fas fa-store"></i> مدیریت فروشگاه</h1>
+            <div>
+                <a href="/admin.html" class="btn btn-outline btn-sm"><i class="fas fa-arrow-right"></i> بازگشت</a>
+                <button class="btn btn-primary btn-sm" onclick="refreshData()"><i class="fas fa-sync-alt"></i> بروزرسانی</button>
+            </div>
+        </div>
+
+        <div id="mainMessage" class="message"></div>
+
+        <div class="tabs">
+            <div class="tab active" data-tab="products">محصولات</div>
+            <div class="tab" data-tab="categories">دسته‌بندی‌ها</div>
+            <div class="tab" data-tab="slides">اسلایدها</div>
+            <div class="tab" data-tab="shop">تنظیمات فروشگاه</div>
+        </div>
+
+        <!-- ===== TAB: محصولات ===== -->
+        <div class="tab-content active" id="tab-products">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-box"></i> لیست محصولات</h2>
+                    <button class="btn btn-success btn-sm" onclick="openProductModal()"><i class="fas fa-plus"></i> محصول جدید</button>
+                </div>
+                <div id="productMessage" class="message"></div>
+                <div class="table-responsive">
+                    <table>
+                        <thead><tr><th>تصویر</th><th>نام</th><th>قیمت</th><th>تخفیف</th><th>موجودی</th><th>دسته</th><th>وضعیت</th><th>عملیات</th></tr></thead>
+                        <tbody id="productsTableBody"><tr><td colspan="8" class="empty-state"><i class="fas fa-box"></i><h3>هیچ محصولی ثبت نشده</h3></td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== TAB: دسته‌بندی‌ها ===== -->
+        <div class="tab-content" id="tab-categories">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-tags"></i> لیست دسته‌بندی‌ها</h2>
+                    <button class="btn btn-success btn-sm" onclick="openCategoryModal()"><i class="fas fa-plus"></i> دسته‌بندی جدید</button>
+                </div>
+                <div id="categoryMessage" class="message"></div>
+                <div class="table-responsive">
+                    <table>
+                        <thead><tr><th>نام</th><th>اسلاگ</th><th>توضیحات</th><th>وضعیت</th><th>عملیات</th></tr></thead>
+                        <tbody id="categoriesTableBody"><tr><td colspan="5" class="empty-state"><i class="fas fa-tags"></i><h3>هیچ دسته‌بندی ثبت نشده</h3></td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== TAB: اسلایدها ===== -->
+        <div class="tab-content" id="tab-slides">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-images"></i> اسلایدهای فروشگاه</h2>
+                    <button class="btn btn-success btn-sm" onclick="openSlideModal()"><i class="fas fa-plus"></i> اسلاید جدید</button>
+                </div>
+                <div id="slideMessage" class="message"></div>
+                <div class="table-responsive">
+                    <table>
+                        <thead><tr><th>تصویر</th><th>عنوان</th><th>زیرنویس</th><th>ترتیب</th><th>وضعیت</th><th>عملیات</th></tr></thead>
+                        <tbody id="slidesTableBody"><tr><td colspan="6" class="empty-state"><i class="fas fa-images"></i><h3>هیچ اسلایدی ثبت نشده</h3></td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== TAB: تنظیمات فروشگاه ===== -->
+        <div class="tab-content" id="tab-shop">
+            <div class="card">
+                <div class="card-header"><h2><i class="fas fa-cog"></i> تنظیمات فروشگاه</h2></div>
+                <div id="shopMessage" class="message"></div>
+                <form id="shopSettingsForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>نام فروشگاه</label>
+                            <input type="text" id="shopName" placeholder="نام فروشگاه">
+                        </div>
+                        <div class="form-group">
+                            <label>اسلاگ</label>
+                            <input type="text" id="shopSlug" placeholder="اسلاگ فروشگاه">
+                        </div>
+                        <div class="form-group">
+                            <label>توضیحات</label>
+                            <input type="text" id="shopDescription" placeholder="توضیحات فروشگاه">
+                        </div>
+                        <div class="form-group">
+                            <label>رنگ اصلی</label>
+                            <input type="color" id="shopPrimaryColor" value="#4facfe">
+                        </div>
+                        <div class="form-group">
+                            <label>رنگ ثانویه</label>
+                            <input type="color" id="shopSecondaryColor" value="#7c3aed">
+                        </div>
+                        <div class="form-group">
+                            <label>وضعیت</label>
+                            <select id="shopStatus"><option value="1">فعال</option><option value="0">غیرفعال</option></select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> ذخیره تنظیمات</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL: محصول ===== -->
+    <div class="modal-overlay" id="productModal">
+        <div class="modal-box">
+            <h3><i class="fas fa-box"></i> <span id="productModalTitle">ثبت محصول جدید</span></h3>
+            <div id="productModalMsg" class="message"></div>
+            <form id="productForm" enctype="multipart/form-data">
+                <input type="hidden" id="pId">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>نام محصول <span class="required">*</span></label>
+                        <input type="text" id="pName" required oninput="autoGenerateSlug(this.value, 'pSlug')">
+                    </div>
+                    <div class="form-group">
+                        <label>اسلاگ <span class="required">*</span></label>
+                        <input type="text" id="pSlug" required placeholder="نام-محصول">
+                        <div class="hint">برای آدرس دهی استفاده می‌شود</div>
+                    </div>
+                    <div class="form-group">
+                        <label>دسته‌بندی</label>
+                        <select id="pCategory"><option value="">بدون دسته</option></select>
+                    </div>
+                    <div class="form-group">
+                        <label>قیمت (تومان) <span class="required">*</span></label>
+                        <input type="number" id="pPrice" required>
+                    </div>
+                    <div class="form-group">
+                        <label>قیمت تخفیف</label>
+                        <input type="number" id="pDiscountPrice" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label>موجودی</label>
+                        <input type="number" id="pStock" value="0">
+                    </div>
+                    <div class="form-group" style="grid-column:1/-1;">
+                        <label>توضیحات</label>
+                        <textarea id="pDescription" rows="3"></textarea>
+                    </div>
+                    <div class="form-group" style="grid-column:1/-1;">
+                        <label>ویژگی‌ها (هر خط یک ویژگی)</label>
+                        <textarea id="pFeatures" rows="3" placeholder="مثال:&#10;کیفیت بالا&#10;ضد آب&#10;باتری قوی"></textarea>
+                        <div class="hint">هر خط یک ویژگی</div>
+                    </div>
+                    <div class="form-group" style="grid-column:1/-1;">
+                        <label>مشخصات فنی (کلید: مقدار)</label>
+                        <div id="specContainer">
+                            <div class="spec-row">
+                                <input type="text" placeholder="کلید" class="spec-key">
+                                <input type="text" placeholder="مقدار" class="spec-value">
+                                <button type="button" class="btn btn-danger btn-sm" onclick="removeSpecRow(this)"><i class="fas fa-times"></i></button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-outline btn-sm" onclick="addSpecRow()"><i class="fas fa-plus"></i> افزودن مشخصات</button>
+                    </div>
+                    <div class="form-group">
+                        <label>تصویر شاخص <span class="required">*</span></label>
+                        <input type="file" id="pCoverImage" accept="image/*" required>
+                        <div class="hint">حداقل یک تصویر الزامی است</div>
+                    </div>
+                    <div class="form-group">
+                        <label>تصاویر اضافی (حداکثر ۱۰ عدد)</label>
+                        <input type="file" id="pImages" accept="image/*" multiple>
+                    </div>
+                    <div class="form-group">
+                        <label>ویدیو (اختیاری)</label>
+                        <input type="file" id="pVideo" accept="video/*">
+                    </div>
+                    <div class="form-group">
+                        <label>وضعیت</label>
+                        <select id="pStatus"><option value="1">فعال</option><option value="0">غیرفعال</option></select>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-primary">✅ ذخیره محصول</button>
+                    <button type="button" class="btn btn-outline" onclick="closeModal('productModal')">❌ انصراف</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===== MODAL: دسته‌بندی ===== -->
+    <div class="modal-overlay" id="categoryModal">
+        <div class="modal-box">
+            <h3><i class="fas fa-tag"></i> <span id="categoryModalTitle">ثبت دسته‌بندی جدید</span></h3>
+            <div id="categoryModalMsg" class="message"></div>
+            <form id="categoryForm">
+                <input type="hidden" id="cId">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>نام <span class="required">*</span></label>
+                        <input type="text" id="cName" required oninput="autoGenerateSlug(this.value, 'cSlug')">
+                    </div>
+                    <div class="form-group">
+                        <label>اسلاگ <span class="required">*</span></label>
+                        <input type="text" id="cSlug" required>
+                    </div>
+                    <div class="form-group" style="grid-column:1/-1;">
+                        <label>توضیحات</label>
+                        <input type="text" id="cDescription">
+                    </div>
+                    <div class="form-group">
+                        <label>آیکون</label>
+                        <input type="text" id="cIcon" placeholder="مثال: fa-car">
+                    </div>
+                    <div class="form-group">
+                        <label>وضعیت</label>
+                        <select id="cStatus"><option value="1">فعال</option><option value="0">غیرفعال</option></select>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-primary">✅ ذخیره</button>
+                    <button type="button" class="btn btn-outline" onclick="closeModal('categoryModal')">❌ انصراف</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===== MODAL: اسلاید ===== -->
+    <div class="modal-overlay" id="slideModal">
+        <div class="modal-box">
+            <h3><i class="fas fa-image"></i> <span id="slideModalTitle">ثبت اسلاید جدید</span></h3>
+            <div id="slideModalMsg" class="message"></div>
+            <form id="slideForm" enctype="multipart/form-data">
+                <input type="hidden" id="sId">
+                <div class="form-grid">
+                    <div class="form-group" style="grid-column:1/-1;">
+                        <label>تصویر <span class="required">*</span></label>
+                        <input type="file" id="sImage" accept="image/*" required>
+                    </div>
+                    <div class="form-group">
+                        <label>عنوان</label>
+                        <input type="text" id="sTitle">
+                    </div>
+                    <div class="form-group">
+                        <label>زیرنویس</label>
+                        <input type="text" id="sSubtitle">
+                    </div>
+                    <div class="form-group">
+                        <label>لینک (اختیاری)</label>
+                        <input type="text" id="sLink" placeholder="/product/slug">
+                    </div>
+                    <div class="form-group">
+                        <label>ترتیب</label>
+                        <input type="number" id="sOrder" value="0">
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-primary">✅ ذخیره</button>
+                    <button type="button" class="btn btn-outline" onclick="closeModal('slideModal')">❌ انصراف</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let shopId = null;
+
+        // ============================================================
+        // TOOLS
+        // ============================================================
+        function generateSlug(text) {
+            return text
+                .toLowerCase()
+                .replace(/[^a-z0-9\u0600-\u06FF\s]/g, '')
+                .replace(/\s+/g, '-')
+                .replace(/-+/g, '-');
+        }
+
+        function autoGenerateSlug(name, slugId) {
+            if (name && name.trim()) {
+                document.getElementById(slugId).value = generateSlug(name);
+            }
+        }
+
+        // ============================================================
+        // TABS
+        // ============================================================
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+                document.getElementById('tab-' + this.dataset.tab).classList.add('active');
+                if (this.dataset.tab === 'products') loadProducts();
+                else if (this.dataset.tab === 'categories') loadCategories();
+                else if (this.dataset.tab === 'slides') loadSlides();
+                else if (this.dataset.tab === 'shop') loadShopSettings();
+            });
+        });
+
+        // ============================================================
+        // MODAL HELPERS
+        // ============================================================
+        function openModal(id) { document.getElementById(id).classList.add('active'); document.body.style.overflow = 'hidden'; }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); document.body.style.overflow = ''; }
+        document.querySelectorAll('.modal-overlay').forEach(el => {
+            el.addEventListener('click', function(e) { if (e.target === this) { this.classList.remove('active'); document.body.style.overflow = ''; } });
+        });
+
+        function showMessage(id, text, type) {
+            const el = document.getElementById(id);
+            el.className = 'message ' + type;
+            el.textContent = text;
+            el.style.display = 'flex';
+            setTimeout(() => { el.style.display = 'none'; }, 5000);
+        }
+
+        function refreshData() { loadProducts(); loadCategories(); loadSlides(); loadShopSettings(); }
+
+        // ============================================================
+        // LOAD SHOP ID
+        // ============================================================
+        async function loadShopId() {
+            try {
+                const res = await fetch('/api/shop/main');
+                if (!res.ok) {
+                    // اگر فروشگاه اصلی وجود نداشت، ایجادش کن
+                    const createRes = await fetch('/api/shop', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            name: 'G-electronic',
+                            slug: 'g-electronic',
+                            description: 'فروشگاه اصلی محصولات GPS و الکترونیک',
+                            is_main: true
+                        })
+                    });
+                    if (!createRes.ok) throw new Error('خطا در ایجاد فروشگاه');
+                    const result = await createRes.json();
+                    shopId = result.shopId;
+                    return;
+                }
+                const data = await res.json();
+                shopId = data.id;
+            } catch (e) {
+                showMessage('mainMessage', '❌ خطا در دریافت فروشگاه: ' + e.message, 'error');
+            }
+        }
+
+        // ============================================================
+        // PRODUCTS
+        // ============================================================
+        async function loadProducts() {
+            if (!shopId) await loadShopId();
+            if (!shopId) {
+                document.getElementById('productsTableBody').innerHTML = 
+                    `<tr><td colspan="8" class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>فروشگاه یافت نشد</h3></td></tr>`;
+                return;
+            }
+            try {
+                const res = await fetch('/api/shop/' + shopId + '/products');
+                const products = await res.json();
+                const tbody = document.getElementById('productsTableBody');
+                if (products.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="8" class="empty-state"><i class="fas fa-box"></i><h3>هیچ محصولی ثبت نشده</h3></td></tr>`;
+                    return;
+                }
+                tbody.innerHTML = products.map(p => `
+                    <tr>
+                        <td><img src="${p.cover_image}" style="width:50px;height:50px;object-fit:cover;border-radius:6px;"></td>
+                        <td><strong style="color:#fff;">${p.name}</strong></td>
+                        <td>${Number(p.price).toLocaleString('fa-IR')}</td>
+                        <td>${p.discount_price > 0 ? Number(p.discount_price).toLocaleString('fa-IR') : '—'}</td>
+                        <td>${p.stock}</td>
+                        <td>${p.category_name || '—'}</td>
+                        <td><span class="status-badge ${p.is_active ? 'active' : 'inactive'}">${p.is_active ? '✅ فعال' : '❌ غیرفعال'}</span></td>
+                        <td>
+                            <div class="table-actions">
+                                <button class="btn-icon edit" onclick="editProduct('${p.id}')"><i class="fas fa-edit"></i></button>
+                                <button class="btn-icon delete" onclick="deleteProduct('${p.id}')"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        async function openProductModal(data = null) {
+            await loadCategoriesSelect();
+            document.getElementById('productModalTitle').textContent = data ? 'ویرایش محصول' : 'ثبت محصول جدید';
+            document.getElementById('pId').value = data?.id || '';
+            document.getElementById('pName').value = data?.name || '';
+            document.getElementById('pSlug').value = data?.slug || '';
+            document.getElementById('pCategory').value = data?.category_id || '';
+            document.getElementById('pPrice').value = data?.price || '';
+            document.getElementById('pDiscountPrice').value = data?.discount_price || '0';
+            document.getElementById('pStock').value = data?.stock || '0';
+            document.getElementById('pDescription').value = data?.description || '';
+            document.getElementById('pFeatures').value = data?.features ? data.features.join('\n') : '';
+            document.getElementById('pStatus').value = data?.is_active !== undefined ? data.is_active : '1';
+            document.getElementById('pCoverImage').required = !data;
+            document.getElementById('pCoverImage').value = '';
+
+            const container = document.getElementById('specContainer');
+            container.innerHTML = '';
+            if (data?.specifications && data.specifications.length > 0) {
+                data.specifications.forEach(spec => {
+                    const row = document.createElement('div');
+                    row.className = 'spec-row';
+                    row.innerHTML = `
+                        <input type="text" placeholder="کلید" class="spec-key" value="${spec.spec_key}">
+                        <input type="text" placeholder="مقدار" class="spec-value" value="${spec.spec_value}">
+                        <button type="button" class="btn btn-danger btn-sm" onclick="removeSpecRow(this)"><i class="fas fa-times"></i></button>
+                    `;
+                    container.appendChild(row);
+                });
+            } else {
+                addSpecRow();
+            }
+
+            document.getElementById('productModalMsg').className = 'message';
+            document.getElementById('productModalMsg').style.display = 'none';
+            openModal('productModal');
+        }
+
+        function addSpecRow() {
+            const container = document.getElementById('specContainer');
+            const row = document.createElement('div');
+            row.className = 'spec-row';
+            row.innerHTML = `
+                <input type="text" placeholder="کلید" class="spec-key">
+                <input type="text" placeholder="مقدار" class="spec-value">
+                <button type="button" class="btn btn-danger btn-sm" onclick="removeSpecRow(this)"><i class="fas fa-times"></i></button>
+            `;
+            container.appendChild(row);
+        }
+
+        function removeSpecRow(btn) { btn.parentElement.remove(); }
+
+        async function loadCategoriesSelect() {
+            if (!shopId) await loadShopId();
+            if (!shopId) return;
+            try {
+                const res = await fetch('/api/shop/' + shopId + '/categories');
+                const cats = await res.json();
+                const select = document.getElementById('pCategory');
+                select.innerHTML = '<option value="">بدون دسته</option>' + cats.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            } catch (e) {}
+        }
+
+        document.getElementById('productForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const isEdit = !!document.getElementById('pId').value;
+            const url = isEdit ? '/api/product/' + document.getElementById('pId').value : '/api/product';
+            const method = isEdit ? 'PUT' : 'POST';
+
+            // جمع‌آوری مشخصات فنی
+            const specKeys = document.querySelectorAll('.spec-key');
+            const specValues = document.querySelectorAll('.spec-value');
+            const specs = [];
+            for (let i = 0; i < specKeys.length; i++) {
+                if (specKeys[i].value.trim() && specValues[i].value.trim()) {
+                    specs.push({ key: specKeys[i].value.trim(), value: specValues[i].value.trim() });
+                }
+            }
+            formData.append('specifications', JSON.stringify(specs));
+
+            // جمع‌آوری ویژگی‌ها
+            const features = document.getElementById('pFeatures').value.split('\n').filter(f => f.trim());
+            formData.append('features', JSON.stringify(features));
+            formData.append('shop_id', shopId);
+
+            try {
+                const res = await fetch(url, { method, body: formData });
+                const result = await res.json();
+                if (res.ok) {
+                    showMessage('productModalMsg', '✅ ' + result.message, 'success');
+                    setTimeout(() => { closeModal('productModal'); loadProducts(); }, 1500);
+                } else {
+                    showMessage('productModalMsg', '❌ ' + (result.error || 'خطا'), 'error');
+                }
+            } catch (e) {
+                showMessage('productModalMsg', '❌ خطا در ارتباط با سرور: ' + e.message, 'error');
+            }
+        });
+
+        async function editProduct(id) {
+            try {
+                const res = await fetch('/api/product/' + id);
+                const data = await res.json();
+                openProductModal(data);
+            } catch (e) {
+                showMessage('productMessage', '❌ خطا در دریافت اطلاعات', 'error');
+            }
+        }
+
+        async function deleteProduct(id) {
+            if (!confirm('آیا از حذف این محصول مطمئن هستید؟')) return;
+            try {
+                const res = await fetch('/api/product/' + id, { method: 'DELETE' });
+                const result = await res.json();
+                if (res.ok) {
+                    showMessage('productMessage', '✅ محصول حذف شد', 'success');
+                    loadProducts();
+                } else {
+                    showMessage('productMessage', '❌ ' + (result.error || 'خطا'), 'error');
+                }
+            } catch (e) {
+                showMessage('productMessage', '❌ خطا در ارتباط با سرور', 'error');
+            }
+        }
+
+        // ============================================================
+        // CATEGORIES
+        // ============================================================
+        async function loadCategories() {
+            if (!shopId) await loadShopId();
+            if (!shopId) return;
+            try {
+                const res = await fetch('/api/shop/' + shopId + '/categories');
+                const cats = await res.json();
+                const tbody = document.getElementById('categoriesTableBody');
+                if (cats.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="empty-state"><i class="fas fa-tags"></i><h3>هیچ دسته‌بندی ثبت نشده</h3></td></tr>`;
+                    return;
+                }
+                tbody.innerHTML = cats.map(c => `
+                    <tr>
+                        <td><strong style="color:#fff;">${c.name}</strong></td>
+                        <td style="direction:ltr;">${c.slug}</td>
+                        <td>${c.description || '—'}</td>
+                        <td><span class="status-badge ${c.is_active ? 'active' : 'inactive'}">${c.is_active ? '✅ فعال' : '❌ غیرفعال'}</span></td>
+                        <td>
+                            <div class="table-actions">
+                                <button class="btn-icon edit" onclick="editCategory('${c.id}')"><i class="fas fa-edit"></i></button>
+                                <button class="btn-icon delete" onclick="deleteCategory('${c.id}')"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        function openCategoryModal(data = null) {
+            document.getElementById('categoryModalTitle').textContent = data ? 'ویرایش دسته‌بندی' : 'ثبت دسته‌بندی جدید';
+            document.getElementById('cId').value = data?.id || '';
+            document.getElementById('cName').value = data?.name || '';
+            document.getElementById('cSlug').value = data?.slug || '';
+            document.getElementById('cDescription').value = data?.description || '';
+            document.getElementById('cIcon').value = data?.icon || '';
+            document.getElementById('cStatus').value = data?.is_active !== undefined ? data.is_active : '1';
+            document.getElementById('categoryModalMsg').className = 'message';
+            document.getElementById('categoryModalMsg').style.display = 'none';
+            openModal('categoryModal');
+        }
+
+        document.getElementById('categoryForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const data = {
+                shop_id: shopId,
+                name: document.getElementById('cName').value.trim(),
+                slug: document.getElementById('cSlug').value.trim(),
+                description: document.getElementById('cDescription').value.trim(),
+                icon: document.getElementById('cIcon').value.trim(),
+                is_active: parseInt(document.getElementById('cStatus').value)
+            };
+            const isEdit = !!document.getElementById('cId').value;
+            const url = isEdit ? '/api/category/' + document.getElementById('cId').value : '/api/category';
+            const method = isEdit ? 'PUT' : 'POST';
+            try {
+                const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+                const result = await res.json();
+                if (res.ok) {
+                    showMessage('categoryModalMsg', '✅ ' + result.message, 'success');
+                    setTimeout(() => { closeModal('categoryModal'); loadCategories(); }, 1500);
+                } else {
+                    showMessage('categoryModalMsg', '❌ ' + (result.error || 'خطا'), 'error');
+                }
+            } catch (e) {
+                showMessage('categoryModalMsg', '❌ خطا در ارتباط با سرور', 'error');
+            }
+        });
+
+        async function editCategory(id) {
+            try {
+                const res = await fetch('/api/category/' + id);
+                const data = await res.json();
+                openCategoryModal(data);
+            } catch (e) {
+                showMessage('categoryMessage', '❌ خطا در دریافت اطلاعات', 'error');
+            }
+        }
+
+        async function deleteCategory(id) {
+            if (!confirm('آیا از حذف این دسته‌بندی مطمئن هستید؟')) return;
+            try {
+                const res = await fetch('/api/category/' + id, { method: 'DELETE' });
+                const result = await res.json();
+                if (res.ok) {
+                    showMessage('categoryMessage', '✅ دسته‌بندی حذف شد', 'success');
+                    loadCategories();
+                } else {
+                    showMessage('categoryMessage', '❌ ' + (result.error || 'خطا'), 'error');
+                }
+            } catch (e) {
+                showMessage('categoryMessage', '❌ خطا در ارتباط با سرور', 'error');
+            }
+        }
+
+        // ============================================================
+        // SLIDES
+        // ============================================================
+        async function loadSlides() {
+            if (!shopId) await loadShopId();
+            if (!shopId) return;
+            try {
+                const res = await fetch('/api/shop/' + shopId + '/slides');
+                const slides = await res.json();
+                const tbody = document.getElementById('slidesTableBody');
+                if (slides.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" class="empty-state"><i class="fas fa-images"></i><h3>هیچ اسلایدی ثبت نشده</h3></td></tr>`;
+                    return;
+                }
+                tbody.innerHTML = slides.map(s => `
+                    <tr>
+                        <td><img src="${s.image_url}" style="width:60px;height:40px;object-fit:cover;border-radius:4px;"></td>
+                        <td>${s.title || '—'}</td>
+                        <td>${s.subtitle || '—'}</td>
+                        <td>${s.sort_order || 0}</td>
+                        <td><span class="status-badge ${s.is_active ? 'active' : 'inactive'}">${s.is_active ? '✅ فعال' : '❌ غیرفعال'}</span></td>
+                        <td>
+                            <div class="table-actions">
+                                <button class="btn-icon edit" onclick="editSlide('${s.id}')"><i class="fas fa-edit"></i></button>
+                                <button class="btn-icon delete" onclick="deleteSlide('${s.id}')"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        function openSlideModal(data = null) {
+            document.getElementById('slideModalTitle').textContent = data ? 'ویرایش اسلاید' : 'ثبت اسلاید جدید';
+            document.getElementById('sId').value = data?.id || '';
+            document.getElementById('sTitle').value = data?.title || '';
+            document.getElementById('sSubtitle').value = data?.subtitle || '';
+            document.getElementById('sLink').value = data?.link || '';
+            document.getElementById('sOrder').value = data?.sort_order || '0';
+            document.getElementById('sImage').required = !data;
+            document.getElementById('sImage').value = '';
+            document.getElementById('slideModalMsg').className = 'message';
+            document.getElementById('slideModalMsg').style.display = 'none';
+            openModal('slideModal');
+        }
+
+        document.getElementById('slideForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            formData.append('shop_id', shopId);
+            const isEdit = !!document.getElementById('sId').value;
+            const url = isEdit ? '/api/slide/' + document.getElementById('sId').value : '/api/slide';
+            const method = isEdit ? 'PUT' : 'POST';
+            try {
+                const res = await fetch(url, { method, body: formData });
+                const result = await res.json();
+                if (res.ok) {
+                    showMessage('slideModalMsg', '✅ ' + result.message, 'success');
+                    setTimeout(() => { closeModal('slideModal'); loadSlides(); }, 1500);
+                } else {
+                    showMessage('slideModalMsg', '❌ ' + (result.error || 'خطا'), 'error');
+                }
+            } catch (e) {
+                showMessage('slideModalMsg', '❌ خطا در ارتباط با سرور', 'error');
+            }
+        });
+
+        async function editSlide(id) {
+            try {
+                const res = await fetch('/api/slide/' + id);
+                const data = await res.json();
+                openSlideModal(data);
+            } catch (e) {
+                showMessage('slideMessage', '❌ خطا در دریافت اطلاعات', 'error');
+            }
+        }
+
+        async function deleteSlide(id) {
+            if (!confirm('آیا از حذف این اسلاید مطمئن هستید؟')) return;
+            try {
+                const res = await fetch('/api/slide/' + id, { method: 'DELETE' });
+                const result = await res.json();
+                if (res.ok) {
+                    showMessage('slideMessage', '✅ اسلاید حذف شد', 'success');
+                    loadSlides();
+                } else {
+                    showMessage('slideMessage', '❌ ' + (result.error || 'خطا'), 'error');
+                }
+            } catch (e) {
+                showMessage('slideMessage', '❌ خطا در ارتباط با سرور', 'error');
+            }
+        }
+
+        // ============================================================
+        // SHOP SETTINGS
+        // ============================================================
+        async function loadShopSettings() {
+            if (!shopId) await loadShopId();
+            if (!shopId) return;
+            try {
+                const [shopRes, settingsRes] = await Promise.all([
+                    fetch('/api/shop/' + shopId),
+                    fetch('/api/shop/' + shopId + '/settings')
+                ]);
+                const shop = await shopRes.json();
+                const settings = await settingsRes.json();
+                document.getElementById('shopName').value = shop.name || '';
+                document.getElementById('shopSlug').value = shop.slug || '';
+                document.getElementById('shopDescription').value = shop.description || '';
+                document.getElementById('shopStatus').value = shop.is_active ? '1' : '0';
+                if (settings.primary_color) document.getElementById('shopPrimaryColor').value = settings.primary_color;
+                if (settings.secondary_color) document.getElementById('shopSecondaryColor').value = settings.secondary_color;
+            } catch (e) { console.error(e); }
+        }
+
+        document.getElementById('shopSettingsForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const data = {
+                name: document.getElementById('shopName').value.trim(),
+                slug: document.getElementById('shopSlug').value.trim(),
+                description: document.getElementById('shopDescription').value.trim(),
+                is_active: parseInt(document.getElementById('shopStatus').value)
+            };
+            try {
+                const res = await fetch('/api/shop/' + shopId, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await res.json();
+                if (res.ok) {
+                    showMessage('shopMessage', '✅ فروشگاه بروزرسانی شد', 'success');
+                } else {
+                    showMessage('shopMessage', '❌ ' + (result.error || 'خطا'), 'error');
+                }
+            } catch (e) {
+                showMessage('shopMessage', '❌ خطا در ارتباط با سرور', 'error');
+            }
+        });
+
+        // ============================================================
+        // INIT
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadShopId();
+            if (shopId) {
+                loadProducts();
+                loadCategories();
+                loadSlides();
+                loadShopSettings();
+            } else {
+                showMessage('mainMessage', '❌ فروشگاه اصلی یافت نشد، لطفاً با ادمین تماس بگیرید', 'error');
+            }
+        });
+    </script>
+</body>
+</html>
